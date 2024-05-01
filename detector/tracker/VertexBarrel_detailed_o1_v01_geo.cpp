@@ -236,7 +236,7 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
         // --- create an assembly and DetElement for the layer
         std::string layer_name = det_name+_toString(layer_id,"_layer%d");
         Tube whole_layer_tube = Tube(x_layer.r(), x_layer.r()+motherVolThickness, motherVolLength/2.);
-        Volume whole_layer_volume = Volume(layer_name, whole_layer_tube);
+        Volume whole_layer_volume = Volume(layer_name, whole_layer_tube, theDetector.material("Air"));
         whole_layer_volume.setVisAttributes(theDetector, "AirVis");
         PlacedVolume whole_layer_placed_volume = envelope.placeVolume(whole_layer_volume);
 
@@ -249,10 +249,10 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
         Tube quadrant1_tube = Tube(x_layer.r(), x_layer.r()+motherVolThickness, motherVolLength, "90.0*deg", "180.0*deg");
         Tube quadrant2_tube = Tube(x_layer.r(), x_layer.r()+motherVolThickness, motherVolLength, "180.0*deg", "270.0*deg");
         Tube quadrant3_tube = Tube(x_layer.r(), x_layer.r()+motherVolThickness, motherVolLength, "270.0*deg", "360.0*deg");
-        Volume quadrant0_volume = Volume(layer_name + "quadrant0", quadrant0_tube);
-        Volume quadrant1_volume = Volume(layer_name + "quadrant1", quadrant1_tube);
-        Volume quadrant2_volume = Volume(layer_name + "quadrant2", quadrant2_tube);
-        Volume quadrant3_volume = Volume(layer_name + "quadrant3", quadrant3_tube);
+        Volume quadrant0_volume = Volume(layer_name + "quadrant0", quadrant0_tube, theDetector.material("Air"));
+        Volume quadrant1_volume = Volume(layer_name + "quadrant1", quadrant1_tube, theDetector.material("Air"));
+        Volume quadrant2_volume = Volume(layer_name + "quadrant2", quadrant2_tube, theDetector.material("Air"));
+        Volume quadrant3_volume = Volume(layer_name + "quadrant3", quadrant3_tube, theDetector.material("Air"));
         quadrant0_volume.setVisAttributes(theDetector, "AirVis");
         quadrant1_volume.setVisAttributes(theDetector, "AirVis");
         quadrant2_volume.setVisAttributes(theDetector, "AirVis");
