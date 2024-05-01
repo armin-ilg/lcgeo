@@ -12,23 +12,6 @@
         <comment>A Vertex Detector for the FCC-ee IDEA detector concept, based on the engineered design by Fabrizio Palla and Filippo Bosi (INFN Pisa), implemented in DD4hep by Armin Ilg (UZH)</comment>
     </info>
     <comment>Outer vertex detector (barrel and disks)</comment>
-    <detectors>
-        <detector name="OuterVertex" type="DD4hep_SubdetectorAssembly" vis="VXDVis">
-            <shape type="BooleanShape" operation="Subtraction" material="Air">
-                <shape type="BooleanShape" operation="Subtraction">
-                    <shape type="Tube" rmin="VTXOB_r_min_layer-VTXOB_r_min_clearance" rmax="VTXOB_r_max" dz="VTXOB_half_length"/>
-                    <shape type="Cone" rmin1="0" rmax1="tan(VertexClearanceTheta)*VTXOB_half_length" rmin2="0" rmax2="0" z="VTXOB_half_length/2."/>
-                    <position x="0" y="0" z="-VTXOB_half_length/2." />
-                </shape>
-                
-                <shape type="Cone" rmin1="0" rmax1="0" rmin2="0" rmax2="tan(VertexClearanceTheta)*VTXOB_half_length" z="VTXOB_half_length/2."/>
-                <position x="0" y="0" z="VTXOB_half_length/2." />
-            </shape>
-            <comment>Vertex Assembly</comment>
-            <composite name="VTXOB"/>
-            <composite name="VTXD"/>
-        </detector>
-    </detectors>
     
     <display>
         <vis name="TerminalPartVis"     alpha="1.0" r="1.0"     g="0.65" b="0.0"    showDaughters="true"  visible="true"/>
@@ -92,6 +75,7 @@
     
             <constant name="VTXOB_z1" value="(VTXOB_nModules1*VTXO_mod_z+(VTXOB_nModules1-1)*VTXOB_mod_z_spacing)/2.0"/>
             <constant name="VTXOB_z2" value="(VTXOB_nModules2*VTXO_mod_z+(VTXOB_nModules2-1)*VTXOB_mod_z_spacing)/2.0"/>
+
             <constant name="VTXOB_r1" value="VTXOB_r_min_layer"/>   <!-- 140 mm-->
             <constant name="VTXOB_r2" value="VTXOB_r_max_layer"/>   <!-- 315 mm -->
 
@@ -130,6 +114,8 @@
             <constant name="VTXOB_TerminalPart_L2_width3"        value="8.5*mm"/>
             <constant name="VTXOB_TerminalPart_L2_length3"        value="9.25*mm"/>
             <constant name="VTXOB_TerminalPart_L2_thickness3"        value="304.345*mm*mm*mm/VTXOB_TerminalPart_L2_width3/VTXOB_TerminalPart_L2_length3"/>
+
+            <constant name="VTXOB_half_length" value="VTXOB_z2+VTXO_hybrid_length+VTXOB_mod_z_spacing+VTXOB_TerminalPart_L1_length2+VTXOB_TerminalPart_L1_length3"/>
         
 
         <!-- Vertex disks parameters -->
@@ -265,7 +251,16 @@
         <!-- Vertex outer barrel   -->
         <detector name="VTXOB" type="VertexBarrel_detailed_o1_v01" vis="VXDVis" id="DetID_VXD_OB" readout="VTXOBCollection"  region="VTXOBRegion">
             <envelope vis="VXDVis">
-                <shape type="Assembly"/>
+                <shape type="BooleanShape" operation="Subtraction" material="Air">
+                    <shape type="BooleanShape" operation="Subtraction">
+                        <shape type="Tube" rmin="VTXOB_r_min_layer-VTXOB_r_min_clearance" rmax="VTXOB_r_max" dz="VTXOB_half_length"/>
+                        <shape type="Cone" rmin1="0" rmax1="tan(VertexClearanceTheta)*VTXOB_half_length" rmin2="0" rmax2="0" z="VTXOB_half_length/2."/>
+                        <position x="0" y="0" z="-VTXOB_half_length/2." />
+                    </shape>
+                    
+                    <shape type="Cone" rmin1="0" rmax1="0" rmin2="0" rmax2="tan(VertexClearanceTheta)*VTXOB_half_length" z="VTXOB_half_length/2."/>
+                    <position x="0" y="0" z="VTXOB_half_length/2." />
+                </shape>
             </envelope>
             <type_flags type=" DetType_TRACKER + DetType_PIXEL + DetType_VERTEX + DetType_BARREL"/>
             
@@ -386,17 +381,30 @@
             </stave>
 
             <!-- Here we construct the barrel -->
-            <layer nLadders="VTXOB_Staves1" phi0="0.0" r="VTXOB_r1" offset="VTXOB_offset1" id="0" nmodules="VTXOB_nModules1" name="SiVTXOBStave1" step="VTXOB_mod_z_spacing"/>
-            <layer nLadders="VTXOB_Staves2" phi0="0.0" r="VTXOB_r2" offset="VTXOB_offset2" id="1" nmodules="VTXOB_nModules2" name="SiVTXOBStave2" step="VTXOB_mod_z_spacing"/>
+            <layer nLadders="VTXOB_Staves1" phi0="0.0" r="VTXOB_r1" offset="VTXOB_offset1" id="0" nmodules="VTXOB_nModules1" name="SiVTXOBStave1" step="VTXOB_mod_z_spacing" motherVolThickness="5.0*cm"/>
+            <layer nLadders="VTXOB_Staves2" phi0="0.0" r="VTXOB_r2" offset="VTXOB_offset2" id="1" nmodules="VTXOB_nModules2" name="SiVTXOBStave2" step="VTXOB_mod_z_spacing" motherVolThickness="5.0*cm"/>
         </detector>
 
 
         <!-- Vertex disks -->
         <detector id="DetID_VXD_Disks" name="VTXD" vis="VXDVis" type="VertexDisks_detailed_o1_v01" readout="VTXDCollection" reflect="true" region="VTXDRegion">
-            <envelope vis="VXDVis">
-                <shape type="Assembly"/>
-            </envelope>
             <comment>Vertex Detector Disks</comment>
+            <envelope vis="VXDVis">
+                <!-- <shape type="BooleanShape" operation="Subtraction" material="Air"> -->
+                    <shape type="BooleanShape" operation="Subtraction" material="Air">
+                        <shape type="BooleanShape" operation="Subtraction">
+                            <shape type="Tube" rmin="VTXD_rmin1" rmax="VTXOB_r_max" dz="VTXD_z_max"/>
+                            <shape type="Cone" rmin1="0" rmax1="tan(VertexClearanceTheta)*VTXD_z_max" rmin2="0" rmax2="0" z="VTXD_z_max/2."/>
+                            <position x="0" y="0" z="-VTXD_z_max/2." />
+                        </shape>
+
+                        <shape type="Cone" rmin1="0" rmax1="0" rmin2="0" rmax2="tan(VertexClearanceTheta)*VTXD_z_max" z="VTXD_z_max/2."/>
+                        <position x="0" y="0" z="VTXD_z_max/2." />
+                    </shape>
+                    <!-- <shape type="Tube" rmin="0.0*mm" rmax="2.0*VTXOB_r_max" dz="VTXD_z_min"/>
+                    <position x="0" y="0" z="0"/>
+                </shape> -->
+            </envelope>
 
             <type_flags type=" DetType_TRACKER + DetType_PIXEL + DetType_VERTEX + DetType_ENDCAP"/>
 
@@ -469,7 +477,7 @@
             </module>
 
             <!-- Here we construct the disks, all disks use the same base stave (SiVTXDStave) with different numbers of modules and other properties -->
-           <layer id="0" z="VTXD_z1" nphi="2" dz="VTXD_dz1" rmin="VTXD_rmin1" reflect_rot="pi/4.0">
+           <layer id="0" z="VTXD_z1" nphi="2" dz="VTXD_dz1" rmin="VTXD_rmin1" rmax="VTXOB_r_max" reflect_rot="pi/4.0" motherVolThickness="5.0*cm">
                 <!-- Face B, one half -->
                 <stave nmodules="2" z_offset="VTXD_disk1_zoffset_stave1B_1" dz="VTXD_support_thickness+VTXD_stave_dz+VTXD_support_thickness" r="VTXD_disk1_roffset_stave1B" step="VTXDModOverlap" phi0="VTXD_phi1B" module="SiVTXDStave"/>
                 <stave nmodules="3" z_offset="VTXD_disk1_zoffset_stave2B_1" dz="VTXD_support_thickness+VTXD_stave_dz+VTXD_support_thickness" r="VTXD_disk1_roffset_stave2B" step="VTXDModOverlap" phi0="VTXD_phi1B" module="SiVTXDStave"/>
@@ -507,7 +515,7 @@
                 <stave nmodules="6" z_offset="VTXD_zoffset_face1+13.5*mm+VTXD_disk1_zoffset_stave7A_2" dz="VTXD_support_thickness+VTXD_stave_dz+VTXD_support_thickness" r="VTXD_disk1_roffset_stave7A" step="VTXDModOverlap" phi0="pi/2.0*rad+VTXD_phi1A" module="SiVTXDStave"/>
             </layer>
 
-            <layer id="1" z="VTXD_z2" nphi="4" dz="VTXD_dz2" rmin="VTXD_rmin2">
+            <layer id="1" z="VTXD_z2" nphi="4" dz="VTXD_dz2" rmin="VTXD_rmin2" rmax="VTXOB_r_max" motherVolThickness="5.0*cm">
                 <!-- Face A -->
                 <stave nmodules="3" z_offset="VTXD_disk2_zoffset_stave1" dz="VTXD_support_thickness+VTXD_stave_dz+VTXD_support_thickness" r="VTXD_disk2_roffset_stave1" step="VTXDModOverlap" phi0="VTXD_phi1A" module="SiVTXDStave"/>
                 <stave nmodules="4" z_offset="VTXD_disk2_zoffset_stave2" dz="VTXD_support_thickness+VTXD_stave_dz+VTXD_support_thickness" r="VTXD_disk2_roffset_stave2" step="VTXDModOverlap" phi0="VTXD_phi1A" module="SiVTXDStave"/>
@@ -526,7 +534,7 @@
 
             </layer>         
 
-             <layer id="2" z="VTXD_z3" nphi="4" dz="VTXD_dz3" rmin="VTXD_rmin3" reflect_rot="pi/4.0">
+             <layer id="2" z="VTXD_z3" nphi="4" dz="VTXD_dz3" rmin="VTXD_rmin3" rmax="VTXOB_r_max" reflect_rot="pi/4.0" motherVolThickness="5.0*cm">
                 <!-- Face A -->
                 <stave nmodules="4" z_offset="VTXD_disk3_zoffset_stave1A" dz="VTXD_support_thickness+VTXD_stave_dz+VTXD_support_thickness" r="VTXD_disk3_roffset_stave1A" step="VTXDModOverlap" phi0="VTXD_phi1A" module="SiVTXDStave"/>
                 <stave nmodules="5" z_offset="VTXD_disk3_zoffset_stave2A" dz="VTXD_support_thickness+VTXD_stave_dz+VTXD_support_thickness" r="VTXD_disk3_roffset_stave2A" step="VTXDModOverlap" phi0="VTXD_phi1A" module="SiVTXDStave"/>

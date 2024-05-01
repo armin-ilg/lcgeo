@@ -19,9 +19,10 @@
 
 using namespace std;
 
-using dd4hep::Assembly;
 using dd4hep::Box;
+using dd4hep::Tube;
 using dd4hep::BUILD_ENVELOPE;
+using dd4hep::getAttrOrDefault;
 using dd4hep::DetElement;
 using dd4hep::Detector;
 using dd4hep::Material;
@@ -42,7 +43,6 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
     std::string  det_name  = x_det.nameStr();
 
     DetElement sdet( det_name, x_det.id()  ) ;
-    PlacedVolume pv;
 
     Volume envelope = dd4hep::xml::createPlacedEnvelope( theDetector,  e , sdet ) ;
     dd4hep::xml::setDetectorTypeFlag( e, sdet ) ;
@@ -80,6 +80,8 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
     // --- Module information struct ---
     struct stave_information{
         string name;
+        double motherVolLength;
+        double motherVolThickness;
 
         vector<componentsStruct> components_vec;
         vector<endOfStaveStruct> endOfStaves;
@@ -105,7 +107,9 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
 
         stave_information m;
         m.name = x_stave.nameStr();
-
+        m.motherVolLength = getAttrOrDefault(x_stave, _Unicode(motherVolLength), float(5.0));
+        m.motherVolThickness = getAttrOrDefault(x_stave, _Unicode(motherVolThickness), float(5.0));
+  
         m.stave_dr = x_stave.dr(0); // Offset for every second module in r
 
         // Components
@@ -219,101 +223,143 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
         int    nmodules         = x_layer.nmodules();
         double step             = x_layer.step();   // Spacing of modules
 
-
         // Use the correct stave
         auto m = *find_if(stave_information_list.cbegin(), stave_information_list.cend(), [&nameStr] (const stave_information& stave) {
             return stave.name == nameStr;
         });    
+        double stave_length = nmodules*m.sensor_length + (nmodules-1)*step;
+
+        double motherVolThickness = getAttrOrDefault(x_layer, _Unicode(motherVolThickness), double(5.0));
+        double motherVolLength = getAttrOrDefault(x_layer, _Unicode(motherVolLength), double(stave_length));
+
 
         // --- create an assembly and DetElement for the layer
         std::string layer_name = det_name+_toString(layer_id,"_layer%d");
-        Assembly layer_assembly(layer_name);
-        DetElement layerDE( sdet , _toString(layer_id,"layer_%d"), layer_id );
-        pv = envelope.placeVolume(  layer_assembly );
-        pv.addPhysVolID("layer", layer_id);  
-        layerDE.setPlacement( pv ) ;
+        Tube whole_layer_tube = Tube(x_layer.r(), x_layer.r()+motherVolThickness, motherVolLength/2.);
+        Volume whole_layer_volume = Volume(layer_name, whole_layer_tube);
+        whole_layer_volume.setVisAttributes(theDetector, "AirVis");
+        PlacedVolume whole_layer_placed_volume = envelope.placeVolume(whole_layer_volume);
 
-        // Assemblies for the four quadrants, reducing the number of objects in an assembly (makes detectors with many barrels faster)
-        Assembly quadrant_assembly0(layer_name + "_quadrant0");
-        pv = layer_assembly.placeVolume(quadrant_assembly0);
-        Assembly quadrant_assembly1(layer_name + "_quadrant1");
-        pv = layer_assembly.placeVolume(quadrant_assembly1);
-        Assembly quadrant_assembly2(layer_name + "_quadrant2");
-        pv = layer_assembly.placeVolume(quadrant_assembly2);
-        Assembly quadrant_assembly3(layer_name + "_quadrant3");
-        pv = layer_assembly.placeVolume(quadrant_assembly3);
-    
+        whole_layer_placed_volume.addPhysVolID("system", x_det.id()).addPhysVolID("side",0).addPhysVolID("layer", layer_id);  
+
+        DetElement layerDE( sdet , _toString(layer_id,"layer_%d"), layer_id );
+        layerDE.setPlacement( whole_layer_placed_volume ) ;
+
+        Tube quadrant0_tube = Tube(x_layer.r(), x_layer.r()+motherVolThickness, motherVolLength, "0.0*deg", "90.0*deg");
+        Tube quadrant1_tube = Tube(x_layer.r(), x_layer.r()+motherVolThickness, motherVolLength, "90.0*deg", "180.0*deg");
+        Tube quadrant2_tube = Tube(x_layer.r(), x_layer.r()+motherVolThickness, motherVolLength, "180.0*deg", "270.0*deg");
+        Tube quadrant3_tube = Tube(x_layer.r(), x_layer.r()+motherVolThickness, motherVolLength, "270.0*deg", "360.0*deg");
+        Volume quadrant0_volume = Volume(layer_name + "quadrant0", quadrant0_tube);
+        Volume quadrant1_volume = Volume(layer_name + "quadrant1", quadrant1_tube);
+        Volume quadrant2_volume = Volume(layer_name + "quadrant2", quadrant2_tube);
+        Volume quadrant3_volume = Volume(layer_name + "quadrant3", quadrant3_tube);
+        quadrant0_volume.setVisAttributes(theDetector, "AirVis");
+        quadrant1_volume.setVisAttributes(theDetector, "AirVis");
+        quadrant2_volume.setVisAttributes(theDetector, "AirVis");
+        quadrant3_volume.setVisAttributes(theDetector, "AirVis");
+        whole_layer_volume.placeVolume(quadrant0_volume);
+        whole_layer_volume.placeVolume(quadrant1_volume);
+        whole_layer_volume.placeVolume(quadrant2_volume);
+        whole_layer_volume.placeVolume(quadrant3_volume);
+
         //--------- loop over ladders ---------------------------
+        Box whole_stave_box = Box(m.motherVolThickness/2., m.sensor_width, m.motherVolLength/2.);
         for(int iStave=0; iStave<nLadders; ++iStave) {
             double phi = phi0 + iStave * dphi  ;
             double layer_r = x_layer.r() + ((iStave%2 == 0) ? 0.0 : dr);  // Offset every second stave in r
             RotationZYX rot( phi , 0, 0  ) ;
 
             string stave_name = layer_name + _toString(iStave,"_stave%d");
-            Assembly stave_assembly(stave_name);
-            // layer_assembly.placeVolume(stave_assembly);
-
-            if(float(iStave)/nLadders<0.25)
-                pv = quadrant_assembly0.placeVolume(stave_assembly);
-            else if(float(iStave)/nLadders<0.5)
-                pv = quadrant_assembly1.placeVolume(stave_assembly);
-            else if(float(iStave)/nLadders<0.75)
-                pv = quadrant_assembly2.placeVolume(stave_assembly);
-            else
-                pv = quadrant_assembly3.placeVolume(stave_assembly);
-
-            double stave_length = nmodules*m.sensor_length + (nmodules-1)*step;
+            Volume whole_stave_volume = Volume(stave_name, whole_stave_box, theDetector.material("Air"));
+            whole_stave_volume.setVisAttributes(theDetector, "AirVis");
             
+            double r_component = layer_r + m.motherVolThickness/2.;   // Such that the first daugher volume is placed right at the edge of the mother volume
+            double r_offset_component = layer_offset;
+            double x_pos = r_component*cos(phi) - r_offset_component*sin(phi);
+            double y_pos = r_component*sin(phi) + r_offset_component*cos(phi);
+            double z_pos = 0.0; 
+            Position pos(x_pos, y_pos, z_pos);
+
+            PlacedVolume whole_stave_placed_volume;
+            if(float(iStave)/nLadders<0.25)
+                whole_stave_placed_volume = quadrant0_volume.placeVolume(whole_stave_volume, Transform3D(rot, pos));
+            else if(float(iStave)/nLadders<0.5)
+                whole_stave_placed_volume = quadrant1_volume.placeVolume(whole_stave_volume, Transform3D(rot, pos));
+            else if(float(iStave)/nLadders<0.75)
+                whole_stave_placed_volume = quadrant2_volume.placeVolume(whole_stave_volume, Transform3D(rot, pos));
+            else
+                whole_stave_placed_volume = quadrant3_volume.placeVolume(whole_stave_volume, Transform3D(rot, pos));
+
             // Place components
             for(auto& component : m.components_vec){
-                Assembly component_assembly(stave_name + "_" + component.name);
-                stave_assembly.placeVolume(component_assembly);
-                for(int i=0; i<int(component.thicknesses.size()); i++){
-                    double r_component = layer_r + component.r + component.rs[i] + component.thicknesses[i]/2.;
-                    double r_offset_component = layer_offset + component.offset + component.offsets[i];
-                    double x_pos = r_component*cos(phi) - r_offset_component*sin(phi);
-                    double y_pos = r_component*sin(phi) + r_offset_component*cos(phi);
-                    double z_pos = 0.0; 
-                    Position pos(x_pos, y_pos, z_pos);
+                r_component = component.r;
+                r_offset_component = component.offset;
+                x_pos = r_component;
+                y_pos = r_offset_component;
+                z_pos = 0.0; 
+                pos=Position(x_pos, y_pos, z_pos);
 
-                    component_assembly.placeVolume(component.volumes[i], Transform3D(rot, pos) );
+                Box components_box = Box(m.motherVolThickness/2., m.sensor_width, m.motherVolLength/2.);
+                Volume components_volume = Volume(stave_name + "_" + component.name, components_box, theDetector.material("Air"));
+                components_volume.setVisAttributes(theDetector, "AirVis");
+                whole_stave_volume.placeVolume(components_volume, pos);
+                for(int i=0; i<int(component.thicknesses.size()); i++){
+                    r_component = component.rs[i] + component.thicknesses[i]/2. - m.motherVolThickness/2.;
+                    r_offset_component = component.offsets[i];
+                    x_pos = r_component;
+                    y_pos = r_offset_component;
+                    z_pos = 0.0; 
+                    pos=Position(x_pos, y_pos, z_pos);
+
+                    components_volume.placeVolume(component.volumes[i], pos );
                 }
             }
 
             // Place end of stave structures
             for(auto& endOfStave : m.endOfStaves){
-                Assembly endOfStave_assembly(stave_name + "_endOfStave");
-                stave_assembly.placeVolume(endOfStave_assembly);
+                r_component = endOfStave.r;
+                r_offset_component = endOfStave.offset;
+                x_pos = r_component;
+                y_pos = r_offset_component;
+                z_pos = 0.0; 
+                pos=Position(x_pos, y_pos, z_pos);
+
+                Box components_box = Box(m.motherVolThickness/2., m.sensor_width, m.motherVolLength/2.);
+                Volume components_volume = Volume(stave_name + "_" + endOfStave.name, components_box, theDetector.material("Air"));
+                components_volume.setVisAttributes(theDetector, "AirVis");
+                whole_stave_volume.placeVolume(components_volume, pos);
                 for(int i=0; i<int(endOfStave.thicknesses.size()); i++){
-                    double r_component = layer_r + endOfStave.r + endOfStave.rs[i] + endOfStave.thicknesses[i]/2.;
-                    double r_offset_component = layer_offset + endOfStave.offset + endOfStave.offsets[i];
-                    double x_pos = r_component*cos(phi) - r_offset_component*sin(phi);
-                    double y_pos = r_component*sin(phi) + r_offset_component*cos(phi);
-                    double z_pos = stave_length/2.+endOfStave.lengths[i]/2.+endOfStave.dzs[i]; 
+                    r_component = endOfStave.rs[i] + endOfStave.thicknesses[i]/2. - m.motherVolThickness/2.;
+                    r_offset_component = endOfStave.offsets[i];
+                    x_pos = r_component;
+                    y_pos = r_offset_component;
+                    z_pos = stave_length/2.+endOfStave.lengths[i]/2.+endOfStave.dzs[i]; 
 
                     // Place it on both sides of the stave
                     vector<Position> positions = {Position(x_pos, y_pos, z_pos), Position(x_pos, y_pos, -z_pos)};
-                    for(auto & pos : positions){                    
-                        endOfStave_assembly.placeVolume(endOfStave.volumes[i], Transform3D(rot, pos) );
+                    for(auto & pos : positions){
+                        components_volume.placeVolume(endOfStave.volumes[i], pos );
                     }
                 }
             }
 
             // Place sensor
-            for(int iModule=0; iModule<nmodules; iModule++){
-                double r_component = layer_r + m.sensor_r + m.sensor_thickness/2. + (iModule%2 == 0 ? 0.0 : m.stave_dr);
-                double r_offset_component = layer_offset + m.sensor_offset;
-                double x_pos = r_component*cos(phi) - r_offset_component*sin(phi);
-                double y_pos = r_component*sin(phi) + r_offset_component*cos(phi);
-                double z_pos = -(nmodules-1)/2.*(m.sensor_length) - (nmodules-1)/2.*step + iModule*m.sensor_length + iModule*step;
-                Position pos(x_pos, y_pos, z_pos);
-                    
+            Box whole_module_box = Box(m.sensor_thickness/2., m.sensor_width, stave_length);
+            for(int iModule=0; iModule<nmodules; iModule++){                    
+                r_component = m.sensor_r + m.sensor_thickness/2. + (iModule%2 == 0 ? 0.0 : m.stave_dr) - m.motherVolThickness/2.;
+                r_offset_component = m.sensor_offset;
+                x_pos = r_component;
+                y_pos = r_offset_component;
+                z_pos = -(nmodules-1)/2.*(m.sensor_length) - (nmodules-1)/2.*step + iModule*m.sensor_length + iModule*step;
+                pos=Position(x_pos, y_pos, z_pos);
+
                 string module_name = stave_name + _toString(iModule,"_module%d");
-                Assembly module_assembly(module_name);
-                pv = stave_assembly.placeVolume(module_assembly);
-                pv.addPhysVolID("module", iModule_tot);
+                Volume whole_module_volume = Volume(module_name, whole_module_box, theDetector.material("Air"));
+                whole_module_volume.setVisAttributes(theDetector, "AirVis");
+                PlacedVolume whole_module_placed_volume = whole_stave_volume.placeVolume(whole_module_volume, pos);
+                whole_module_placed_volume.addPhysVolID("module", iModule_tot);
                 DetElement moduleDE(layerDE,module_name,x_det.id());
-                moduleDE.setPlacement(pv);
+                moduleDE.setPlacement(whole_stave_placed_volume);
 
                 // Place all sensor parts
                 int iSensitive = 0, iPassive = 0;
@@ -321,34 +367,32 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
                     x_pos = 0.0;
                     y_pos = m.sensor_xmin[i]+abs(m.sensor_xmax[i]-m.sensor_xmin[i])/2.;
                     z_pos = m.sensor_ymin[i]+abs(m.sensor_ymax[i]-m.sensor_ymin[i])/2.;
-                    Position pos2(x_pos, y_pos, z_pos);
+                    pos=Position(x_pos, y_pos, z_pos);
 
                     // Place active sensor parts
                     if(m.sensor_sensitives[i]) {
                         string sensor_name = module_name + _toString(iSensitive,"_sensor%d");
-                        pv = module_assembly.placeVolume(m.sensor_volumes[i], Transform3D(rot, pos)*Translation3D(pos2));
+                        PlacedVolume sensor_placed_volume = whole_module_volume.placeVolume(m.sensor_volumes[i], pos);
 
-                        pv.addPhysVolID("sensor", iSensitive);
+                        sensor_placed_volume.addPhysVolID("sensor", iSensitive);
                         DetElement sensorDE(moduleDE,sensor_name,x_det.id());
-                        sensorDE.setPlacement(pv);
+                        sensorDE.setPlacement(sensor_placed_volume);
                         iSensitive++;
                     }
                     // Place passive sensor parts
                     else{
-                        pv = module_assembly.placeVolume(m.sensor_volumes[i], Transform3D(rot, pos)*Translation3D(pos2));
+                        whole_module_volume.placeVolume(m.sensor_volumes[i], pos);
                         iPassive++;
                     }
                 }
                 iModule_tot++;
             }
-            stave_assembly->GetShape()->ComputeBBox() ;
+            // stave_assembly->GetShape()->ComputeBBox() ;
         }
-        layer_assembly->GetShape()->ComputeBBox() ;
+        // layer_assembly->GetShape()->ComputeBBox() ;
     }
 
     sdet.setAttributes(theDetector,envelope,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
-
-    pv.addPhysVolID("system", x_det.id()).addPhysVolID("side",0);
 
     return sdet;
 }
