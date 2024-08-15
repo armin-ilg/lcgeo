@@ -470,13 +470,13 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
                             SurfaceType type = SurfaceType::Sensitive;
                             type.setProperty(SurfaceType::Cylinder,true);
 
-                            //// New dd4hep functionality required for cylinder segment sensitive surface                            
-                            // double width = abs(m.sensor_xmax[i]-m.sensor_xmin[i])/(m.stave_r+m.sensor_r);
-                            // double phi_offset = +M_PI/2. + (m.sensor_xmin[0]+abs(m.sensor_xmax[0]-m.sensor_xmin[0])/2.)/(m.stave_r+m.sensor_r)  + m.sensor_phi_offsets[i];
-                            // VolCylinder surf(m.sensor_volumes[i], type, m.sensor_thickness/2., m.sensor_thickness/2., ocyl, width, phi_offset);                            
+                            // New dd4hep functionality required for cylinder segment sensitive surface                            
+                            double width = abs(m.sensor_xmax[i]-m.sensor_xmin[i])/(m.stave_r+m.sensor_r);
+                            double phi_offset = +M_PI/2. + (m.sensor_xmin[0]+abs(m.sensor_xmax[0]-m.sensor_xmin[0])/2.)/(m.stave_r+m.sensor_r)  + m.sensor_phi_offsets[i];
+                            VolCylinder surf(m.sensor_volumes[i], type, m.sensor_thickness/2., m.sensor_thickness/2., ocyl, width, phi_offset);                            
 
-                            //// For the moment use the old functionality
-                            VolCylinder surf(m.sensor_volumes[i], type, m.sensor_thickness/2., m.sensor_thickness/2., ocyl);
+                            //// Old functionality
+                            // VolCylinder surf(m.sensor_volumes[i], type, m.sensor_thickness/2., m.sensor_thickness/2., ocyl);
 
                             volSurfaceList(sensorDE)->push_back(surf);
                             iSensitive++;
