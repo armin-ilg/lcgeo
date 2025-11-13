@@ -225,6 +225,8 @@ if(INSTALL_BEAMPIPE_STL_FILES)
 	  "test2masks/Copper_pipe_04022025.stl"
 	  "test2masks/1_MASk_SRF_27102025.stl"
 	  "test2masks/Mask_2_Andrea_21102025.stl"
+	  "test2masks/prolunga_albemet_13112025.stl"
+	  "test2masks/SS_13112025.stl"
         )
     # Set main FCC url
     set(FCC_URL "https://fccsw.web.cern.ch/fccsw/filesForSimDigiReco")
