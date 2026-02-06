@@ -1,11 +1,7 @@
 #include "FieldMapBrBz.h"
 
 #include <DD4hep/Version.h>
-#if DD4HEP_VERSION_GE(0, 24)
 #include <DD4hep/detail/Handle.inl>
-#else
-#include <DD4hep/Handle.inl>
-#endif
 
 #include <DD4hep/DetFactoryHelper.h>
 
@@ -139,8 +135,8 @@ void FieldMapBrBz::fieldComponents(const double* pos, double* globalField) {
   field[1] = (1.0 - rd) * (1.0 - zd) * B_r0z0.Bz + rd * (1.0 - zd) * B_r1z0.Bz + (1.0 - rd) * zd * B_r0z1.Bz +
              rd * zd * B_r1z1.Bz;
 
-  globalField[0] += field[0] * sin(phi);
-  globalField[1] += field[0] * cos(phi);
+  globalField[0] += field[0] * cos(phi);
+  globalField[1] += field[0] * sin(phi);
   globalField[2] += field[1];
 
   /*

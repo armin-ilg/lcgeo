@@ -8,6 +8,7 @@
 #include "DD4hep/OpticalSurfaces.h"
 
 #include "DDRec/DetectorData.h"
+#include "XML/Utilities.h"
 
 namespace ddDRcalo {
 static dd4hep::Ref_t create_detector(dd4hep::Detector& description, xml_h xmlElement,
@@ -30,6 +31,7 @@ static dd4hep::Ref_t create_detector(dd4hep::Detector& description, xml_h xmlEle
   xml_comp_t x_dim(x_structure.child(_Unicode(dim)));
   xml_comp_t x_sipmDim(x_det.child(_Unicode(sipmDim)));
   xml_comp_t x_worldTube(x_structure.child(_Unicode(worldTube)));
+  xml_comp_t x_neighbor(x_structure.child(_Unicode(neighborhood)));
 
   dd4hep::OpticalSurfaceManager surfMgr = description.surfaceManager();
   dd4hep::OpticalSurface sipmSurfProp = surfMgr.opticalSurface("/world/" + name + "#SiPMSurf");
@@ -39,18 +41,23 @@ static dd4hep::Ref_t create_detector(dd4hep::Detector& description, xml_h xmlEle
       dynamic_cast<dd4hep::DDSegmentation::GridDRcalo_k4geo*>(sensDet.readout().segmentation().segmentation());
   segmentation->setGridSize(x_dim.distance());
   segmentation->setSipmSize(x_dim.dx());
+  segmentation->setRemoveDifferentCh(static_cast<bool>(x_neighbor.delta()));
 
   auto paramBarrel = segmentation->paramBarrel();
   paramBarrel->SetInnerX(x_barrel.rmin());
   paramBarrel->SetTowerH(x_barrel.height());
   paramBarrel->SetNumZRot(x_barrel.nphi());
   paramBarrel->SetSipmHeight(x_sipmDim.height());
+  paramBarrel->SetNeighborSize(x_neighbor.rmax1());
+  paramBarrel->SetMargin(x_neighbor.x1());
 
   auto paramEndcap = segmentation->paramEndcap();
   paramEndcap->SetInnerX(x_endcap.rmin());
   paramEndcap->SetTowerH(x_endcap.height());
   paramEndcap->SetNumZRot(x_endcap.nphi());
   paramEndcap->SetSipmHeight(x_sipmDim.height());
+  paramEndcap->SetNeighborSize(x_neighbor.rmax2());
+  paramEndcap->SetMargin(x_neighbor.x2());
 
   auto constructor = DRconstructor(x_det);
   constructor.setExpHall(&experimentalHall);
@@ -76,12 +83,12 @@ static dd4hep::Ref_t create_detector(dd4hep::Detector& description, xml_h xmlEle
   // rmin, rmax, zmin, zmax, rmin2, rmax2
   // inner r & z are avg values (for track extrapolation)
   // outer r & z are envelope values
-  extensionData->extent[0] = x_barrel.rmin(); // barrel rmin
-  extensionData->extent[1] = x_worldTube.rmax(); // barrel rmax
-  extensionData->extent[2] = x_endcap.rmin(); // endcap zmin
+  extensionData->extent[0] = x_barrel.rmin();      // barrel rmin
+  extensionData->extent[1] = x_worldTube.rmax();   // barrel rmax
+  extensionData->extent[2] = x_endcap.rmin();      // endcap zmin
   extensionData->extent[3] = x_worldTube.height(); // endcap zmax
-  extensionData->extent[4] = x_worldTube.rmin(); // endcap rmin
-  extensionData->extent[5] = x_worldTube.rmax(); // endcap rmax
+  extensionData->extent[4] = x_worldTube.rmin();   // endcap rmin
+  extensionData->extent[5] = x_worldTube.rmax();   // endcap rmax
 
   // TODO separate barrel & endcap
   // type is barrel for the moment
@@ -89,6 +96,9 @@ static dd4hep::Ref_t create_detector(dd4hep::Detector& description, xml_h xmlEle
 
   // attach the calo data to the detector
   drDet.addExtension<dd4hep::rec::LayeredCalorimeterData>(extensionData);
+
+  // Set type flags
+  dd4hep::xml::setDetectorTypeFlag(x_det, drDet);
 
   return drDet;
 }

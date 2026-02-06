@@ -59,8 +59,8 @@ static dd4hep::Ref_t createHCal(dd4hep::Detector& lcdd, xml_det_t xmlDet, dd4hep
   double dzSequence = dimensionsB.dz();
   dd4hep::printout(dd4hep::DEBUG, "HCalTileBarrel_o1_v02", "sequence thickness %.2f", dzSequence);
 
-  // calculate the number of sequences fitting in Z
-  unsigned int numSequencesZ = static_cast<unsigned>((2 * xDimensions.dz() - 2 * dZEndPlate - 2 * space) / dzSequence);
+  // number of sequences fitting in Z
+  unsigned int numSequencesZ = lcdd.constant<unsigned>("BarHCal_numSequencesZ");
 
   // get all 'layer' children of the 'layers' tag
   std::vector<xml_comp_t> Layers;
@@ -203,7 +203,7 @@ static dd4hep::Ref_t createHCal(dd4hep::Detector& lcdd, xml_det_t xmlDet, dd4hep
     std::vector<dd4hep::PlacedVolume> sq_vector;
 
     for (uint numSeq = 0; numSeq < numSequencesZ; numSeq++) {
-      double zOffset = -dzDetector + (2 * numSeq + 1) * (dzSequence * 0.5);
+      double zOffset = -dzDetector + numSeq * dzSequence + dzSequence / 2 + dZEndPlate + space;
       dd4hep::Position tileSequencePosition(0, 0, zOffset);
       dd4hep::PlacedVolume placedTileSequenceVolume = layerVolume.placeVolume(tileSequenceVolume, tileSequencePosition);
       placedTileSequenceVolume.addPhysVolID("row", numSeq);
@@ -238,9 +238,9 @@ static dd4hep::Ref_t createHCal(dd4hep::Detector& lcdd, xml_det_t xmlDet, dd4hep
   // try to retrieve segmentation itself
   std::string layerFieldName;
   dd4hep::DDSegmentation::FCCSWHCalPhiTheta_k4geo* seg_phitheta =
-    dynamic_cast<dd4hep::DDSegmentation::FCCSWHCalPhiTheta_k4geo*>(segHandle.segmentation());
+      dynamic_cast<dd4hep::DDSegmentation::FCCSWHCalPhiTheta_k4geo*>(segHandle.segmentation());
   dd4hep::DDSegmentation::FCCSWHCalPhiRow_k4geo* seg_phirow =
-    dynamic_cast<dd4hep::DDSegmentation::FCCSWHCalPhiRow_k4geo*>(segHandle.segmentation());
+      dynamic_cast<dd4hep::DDSegmentation::FCCSWHCalPhiRow_k4geo*>(segHandle.segmentation());
   if (seg_phitheta) {
     dd4hep::printout(dd4hep::DEBUG, "HCalTileBarrel_o1_v02", "Segmentation is of type FCCSWHCalPhiTheta_k4geo");
     layerFieldName = seg_phitheta->fieldNameLayer();
@@ -307,8 +307,10 @@ static dd4hep::Ref_t createHCal(dd4hep::Detector& lcdd, xml_det_t xmlDet, dd4hep
     }
     dd4hep::printout(dd4hep::INFO, "HCalTileBarrel_o1_v02", "    sensitive thickness is: %lf", thickness_sen);
     dd4hep::printout(dd4hep::INFO, "HCalTileBarrel_o1_v02", "    absorber thickness is: %lf", absorberThickness);
-    dd4hep::printout(dd4hep::INFO, "HCalTileBarrel_o1_v02", "    number of radiation length is: %lf", nRadiationLengths);
-    dd4hep::printout(dd4hep::INFO, "HCalTileBarrel_o1_v02", "    number of interaction length is: %lf", nInteractionLengths);
+    dd4hep::printout(dd4hep::INFO, "HCalTileBarrel_o1_v02", "    number of radiation length is: %lf",
+                     nRadiationLengths);
+    dd4hep::printout(dd4hep::INFO, "HCalTileBarrel_o1_v02", "    number of interaction length is: %lf",
+                     nInteractionLengths);
 
     caloLayer.distance = layerInnerRadii.at(idxLayer);   // radius of the current layer
     caloLayer.sensitive_thickness = difference_bet_r1r2; // radial dimension of the current layer
@@ -327,11 +329,11 @@ static dd4hep::Ref_t createHCal(dd4hep::Detector& lcdd, xml_det_t xmlDet, dd4hep
       std::vector<double> cellSizeVector = seg_phitheta->cellDimensions(0);
       double cellSizeTheta = cellSizeVector[1];
       double cellSizePhi = cellSizeVector[0];
-      dd4hep::printout(dd4hep::INFO, "HCalTileBarrel_o1_v02", "    cell sizes in theta, phi: %lf , %lf", cellSizeTheta, cellSizePhi);
+      dd4hep::printout(dd4hep::INFO, "HCalTileBarrel_o1_v02", "    cell sizes in theta, phi: %lf , %lf", cellSizeTheta,
+                       cellSizePhi);
       caloLayer.cellSize0 = cellSizeTheta;
       caloLayer.cellSize1 = cellSizePhi;
-    }
-    else if (seg_phirow) {
+    } else if (seg_phirow) {
       // the merging of the rows into cells can differ layer by layer so need to pass
       // cellID with layer field properly filled in order to get good dimension
       dd4hep::CellID cID;
@@ -339,7 +341,8 @@ static dd4hep::Ref_t createHCal(dd4hep::Detector& lcdd, xml_det_t xmlDet, dd4hep
       std::vector<double> cellSizeVector = seg_phirow->cellDimensions(cID);
       double cellSizeZ = cellSizeVector[1];
       double cellSizePhi = cellSizeVector[0];
-      dd4hep::printout(dd4hep::INFO, "HCalTileBarrel_o1_v02", "    cell sizes in z, phi: %lf , %lf", cellSizeZ, cellSizePhi);
+      dd4hep::printout(dd4hep::INFO, "HCalTileBarrel_o1_v02", "    cell sizes in z, phi: %lf , %lf", cellSizeZ,
+                       cellSizePhi);
       caloLayer.cellSize0 = cellSizeZ;
       caloLayer.cellSize1 = cellSizePhi;
     }

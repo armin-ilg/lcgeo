@@ -1,47 +1,30 @@
-#include "DD4hep/DetType.h"
-#include "DDRec/DetectorData.h"
-#include "XML/Utilities.h"
 #include <DD4hep/DetFactoryHelper.h>
+#include <DD4hep/DetType.h>
+#include <DDRec/DetectorData.h>
 #include <XML/Layering.h>
+#include <XML/Utilities.h>
 
 #include <string>
 
 using dd4hep::_toString;
-using dd4hep::Assembly;
-using dd4hep::Box;
 using dd4hep::BUILD_ENVELOPE;
-using dd4hep::Cone;
 using dd4hep::Detector;
 using dd4hep::DetElement;
 using dd4hep::DetType;
-using dd4hep::IntersectionSolid;
-using dd4hep::Layer;
 using dd4hep::Layering;
 using dd4hep::Material;
 using dd4hep::PlacedVolume;
-using dd4hep::PolyhedraRegular;
 using dd4hep::Position;
-using dd4hep::Readout;
 using dd4hep::Ref_t;
 using dd4hep::Rotation3D;
 using dd4hep::RotationY;
 using dd4hep::RotationZYX;
-using dd4hep::Segmentation;
 using dd4hep::SensitiveDetector;
-using dd4hep::SubtractionSolid;
 using dd4hep::Transform3D;
-using dd4hep::Translation3D;
-using dd4hep::Trapezoid;
 using dd4hep::Tube;
-using dd4hep::UnionSolid;
 using dd4hep::Volume;
 
 using dd4hep::rec::LayeredCalorimeterData;
-
-// workaround for DD4hep v00-14 (and older)
-#ifndef DD4HEP_VERSION_GE
-#define DD4HEP_VERSION_GE(a, b) 0
-#endif
 
 static Ref_t create_detector(Detector& theDetector, xml_h element, SensitiveDetector sens) {
 
@@ -56,6 +39,10 @@ static Ref_t create_detector(Detector& theDetector, xml_h element, SensitiveDete
   xml_det_t xmlLumiCal = element;
   const std::string detName = xmlLumiCal.nameStr();
 
+  // only set detector like type flags if there is a sensitive element in this detector, needed to unambniguously
+  // identify the actual lumical in e.g., Pandora
+  bool haveSensitive = false;
+
   DetElement sdet(detName, xmlLumiCal.id());
 
   // --- create an envelope volume and position it into the world ---------------------
@@ -63,8 +50,6 @@ static Ref_t create_detector(Detector& theDetector, xml_h element, SensitiveDete
   Volume envelope = dd4hep::xml::createPlacedEnvelope(theDetector, element, sdet);
   DetElement lumiCalDE_1(sdet, "Calorimeter1", 1);
   DetElement lumiCalDE_2(sdet, "Calorimeter2", 2);
-
-  sdet.setTypeFlag(DetType::CALORIMETER | DetType::ENDCAP | DetType::ELECTROMAGNETIC | DetType::FORWARD);
 
   if (theDetector.buildType() == BUILD_ENVELOPE)
     return sdet;
@@ -158,15 +143,14 @@ static Ref_t create_detector(Detector& theDetector, xml_h element, SensitiveDete
         thickness_sum += slice_thickness / 2;
 
         if (compSlice.isSensitive()) {
+          haveSensitive = true;
 
-#if DD4HEP_VERSION_GE(0, 15)
           // Store "inner" quantities
           caloLayer.inner_nRadiationLengths = nRadiationLengths;
           caloLayer.inner_nInteractionLengths = nInteractionLengths;
           caloLayer.inner_thickness = thickness_sum;
           // Store scintillator thickness
           caloLayer.sensitive_thickness = slice_thickness;
-#endif
           // Reset counters to measure "outside" quantitites
           nRadiationLengths = 0.;
           nInteractionLengths = 0.;
@@ -190,11 +174,9 @@ static Ref_t create_detector(Detector& theDetector, xml_h element, SensitiveDete
       /// Needs to be innermost face distance
       caloLayer.distance = lcalCentreZ + referencePosition;
 
-#if DD4HEP_VERSION_GE(0, 15)
       caloLayer.outer_nRadiationLengths = nRadiationLengths;
       caloLayer.outer_nInteractionLengths = nInteractionLengths;
       caloLayer.outer_thickness = thickness_sum;
-#endif
 
       caloLayer.cellSize0 = LumiCal_cell_size;
       caloLayer.cellSize1 = LumiCal_cell_size;
@@ -231,6 +213,12 @@ static Ref_t create_detector(Detector& theDetector, xml_h element, SensitiveDete
   lumiCalDE_2.setPlacement(pv2);
 
   sdet.addExtension<LayeredCalorimeterData>(caloData);
+
+  if (haveSensitive) {
+    sdet.setTypeFlag(DetType::CALORIMETER | DetType::ENDCAP | DetType::ELECTROMAGNETIC | DetType::FORWARD);
+  } else {
+    sdet.setTypeFlag(DetType::SUPPORT | DetType::AUXILIARY | DetType::ENDCAP | DetType::FORWARD);
+  }
 
   return sdet;
 }

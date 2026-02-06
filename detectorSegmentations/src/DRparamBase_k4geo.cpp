@@ -2,6 +2,8 @@
 
 #include "Math/GenVector/RotationZYX.h"
 
+#include <stdexcept>
+
 namespace dd4hep {
 namespace DDSegmentation {
 
@@ -96,6 +98,29 @@ namespace DDSegmentation {
     auto pos = GetSipmLayerPos(numPhi);
 
     return dd4hep::Transform3D(rot, pos);
+  }
+
+  void DRparamBase_k4geo::SetFullLengthFibers(int rmin, int rmax, int cmin, int cmax) {
+    if (fFilled)
+      throw std::runtime_error(
+          "DRparamBase_k4geo: An attempt to modify the geometry outside the detector construction is forbidden!");
+
+    fFullLengthFibers.insert(std::make_pair(fCurrentTowerNum, fullLengthFibers(rmin, rmax, cmin, cmax)));
+  }
+
+  double DRparamBase_k4geo::shortFibers::retrieveFiberLength(const int row, const int col) const {
+    if (m_fiberLengths_.find(std::make_pair(row, col)) == m_fiberLengths_.end())
+      return fTowerH;
+
+    return m_fiberLengths_.at(std::make_pair(row, col));
+  }
+
+  void DRparamBase_k4geo::SetShortFibers(const shortFibers& input) {
+    if (fFilled)
+      throw std::runtime_error(
+          "DRparamBase_k4geo: An attempt to modify the geometry outside the detector construction is forbidden!");
+
+    fShortFibers.insert(std::make_pair(fCurrentTowerNum, input));
   }
 
 } // namespace DDSegmentation

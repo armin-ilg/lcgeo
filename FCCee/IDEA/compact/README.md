@@ -30,6 +30,8 @@ Febraury 2025: Added surface plugins for both muon-system and preshower, with ad
 
 March 2025: The SiPM & optical filter part of the fiber DRC SD action are now moved to the k4RecCalorimeter (now part of the SiPM simulation)
 
+July 2025: Added the fiber DRC neighborhood finding algorithm with configure size definition for topological clustering in downstream.
+
 IDEA_o1_v04
 ------------
 
@@ -40,12 +42,15 @@ In the curved vertex detector variant, the curved sensors can be approximated by
 The silicon wrapper is completely revamped. It has a more efficient volume hierarchy and thus enabling to use a detailed sensor description (each sensor is 4x4 cm^2 in size). There are two barrel layers and two disks per side which together make sure that in almost the complete detector coverage one gets at least one hit.
 The total area of sensors is reduced compared to the o1_v03 version.
 
-
 IDEA_o2_v01
 ------------
 
-Second option of IDEA detector. The inner part up to the drift-chamber is identical to IDEA_o1, the dual-readout calorimeter uses the INFN capillary-tubes technology and replaces the monolithic calorimeter description. Between the drift-chamber and the dual-readout calorimeter a dual-readout crystal electromagnetic calorimeter will be placed, consequentially the preshower is removed. The muon system is identical to IDEA_o1.
+Second option of IDEA detector. The inner part up to the drift-chamber is identical to IDEA_o1, the dual-readout calorimeter uses the INFN capillary-tubes technology and replaces the monolithic calorimeter description. Between the drift-chamber and the dual-readout calorimeter a dual-readout crystal electromagnetic calorimeter is placed, consequentially the preshower is removed. The muon system is identical to IDEA_o1.
 
 October 2024: first implementation using the dual-readout capillary-tubes endcap geometry.
 
 December 2024: Added the dual-readout capillary-tubes barrel calorimeter.
+
+April 2025: Added the dual-readout segmented crystal ECAL
+
+February 2026: Switch to vertex detector and silicon wrapper from IDEA_o1_v04

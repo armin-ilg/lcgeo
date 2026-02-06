@@ -1,3 +1,444 @@
+# v00-24
+
+* 2025-11-26 Lorenzo Pezzotti ([PR#545](https://github.com/key4hep/k4geo/pull/545))
+  - Set optical fiber radius identical for IDEA_o2 endcap and barrel hadronic calorimeters
+  - Do not include IDEA_o2 hadronic barrel calorimeter casing by default
+
+* 2025-11-26 Daniel Jeans ([PR#540](https://github.com/key4hep/k4geo/pull/540))
+  - Updated ILD_FCCee_v0{1,2} to use MDI description MDI_o1_CADBased_v01
+  - world volume material changed to vacuum (to ensure vacuum within beampipe)
+
+* 2025-11-21 sss ([PR#535](https://github.com/key4hep/k4geo/pull/535))
+  - Updated HCal segmentation classes to more efficiently store cell edge information as vectors rather than as hash maps.
+
+* 2025-11-19 Juan Miguel Carceller ([PR#546](https://github.com/key4hep/k4geo/pull/546))
+  - Set the env variable K4GEO in thisk4geo.sh to the current source directory, since in the installation there may be or not a folder with the compact files (depending on the cmake option `INSTALL_COMPACT_FILES`)
+
+* 2025-11-17 Lorenzo Pezzotti ([PR#539](https://github.com/key4hep/k4geo/pull/539))
+  - Avoid energy deposition filters for the scepcal in the IDEA_o2 steering file for correct usage of its SDAction
+  - Reproduce the expected experimental light yields and light fluctuations for the scepcal main crystals and timing layer
+  - Do not simulate Cerenkov light in the scepcal timing layer
+
+* 2025-11-17 sss ([PR#536](https://github.com/key4hep/k4geo/pull/536))
+  - Fixed cmake development warnings.
+
+* 2025-11-13 Giovanni Marchiori ([PR#543](https://github.com/key4hep/k4geo/pull/543))
+  - fix comments in turbine segmentation class
+
+* 2025-11-05 Juan Miguel Carceller ([PR#531](https://github.com/key4hep/k4geo/pull/531))
+  - Remove checks for old versions of DD4hep (10+ years old)
+
+* 2025-11-05 SanghyunKo ([PR#529](https://github.com/key4hep/k4geo/pull/529))
+  - Allow negative time optical photons (from BIB overlay) in the DRCaloSDAction
+
+* 2025-10-31 aciarma ([PR#534](https://github.com/key4hep/k4geo/pull/534))
+  - [FCCee] MDI_o1_ShapeBased_v01 started from MDI_o1_v00 
+  - [FCCee] added antisolenoid field map to ShapeBased
+  - [FCCee] added final focus quadrupoles and their field to ShapeBased. Dimension and magnetic field defined via parameter xml based on different accelerator lattice versions and beam energy
+  - [FCCee] add quadrupoles also to MDI_CADbased_o1_v01"
+
+* 2025-10-30 BrieucF ([PR#532](https://github.com/key4hep/k4geo/pull/532))
+  - [FCCee] Remove the detector solenoid field from the CAD imports (it is defined by the detector xml's)
+  - [FCCee] Remove the compensating solenoid analytical field map from the detector xml
+  - [FCCee] Switch the commented CAD beampipe to a newer version and add a workaround to have vacuum inside the pipe
+
+* 2025-10-29 aciarma ([PR#530](https://github.com/key4hep/k4geo/pull/530))
+  Added field map from Mike Koratzinos for the magnetic field of IR antisolenoids.
+  The fieldmap accounts only for the antisolenoids, so it must be overlapped with the detector field.
+  For the moment I used an example description for the 2T detector solenoid field (fields_solenoid.xml) but this part may be different for each experiment and therefore in each dedicated xml, not in /MDI.
+  The antisolenoids are common instead.
+  
+  Example of the field on the ZX plane from `dumpBfield`:
+  <img width="927" height="587" alt="image" src="https://github.com/user-attachments/assets/435946c8-d8ab-416b-8576-9f205401613d" />
+
+* 2025-10-24 sss ([PR#524](https://github.com/key4hep/k4geo/pull/524))
+  - Updated FCCSWHCalPhiTheta_k4geo and FCCSWHCalPhiRow_k4geo to avoid the thread-unsafe use of mutable members.
+
+* 2025-10-22 Stefano Fanchellucci ([PR#497](https://github.com/key4hep/k4geo/pull/497))
+  - Harmonize object ID for Vertex Barrel
+
+* 2025-10-21 aciarma ([PR#528](https://github.com/key4hep/k4geo/pull/528))
+  * FCCee/MDI: Moved the `stl_files` folder up one level:
+    from `FCCee/MDI/compact/MDI_o1_v01/stl_files` to `FCCee/MDI/compact/stl_files`
+    Provide a common space for CAD versions sharing the same files.
+
+* 2025-10-17 aciarma ([PR#527](https://github.com/key4hep/k4geo/pull/527))
+  CAD version of MDI had the crotch rotated 180deg, so that the notch for the SR mask was on the wrong side.
+  The SR mask is only on the lower part of the upstream beampipes - negative x coordinates.
+  
+  Created new folder MDI_o1_CADBased_v01 with the following fixes:
+  - fixed orientation of crotch beam pipe
+  - added MDI_standalone_v01.xml files to ease debug of MDI geometries
+  
+  New naming convention decided:
+  - MDI_o1_ShapeBased_vXX for shape based geometries
+  - MDI_o1_CADBased_vXX    for CAD based geometries
+
+* 2025-10-14 mahmoudali2 ([PR#526](https://github.com/key4hep/k4geo/pull/526))
+  This PR introduces improvements to the muon system of the IDEA detector:
+  1. Automated Endcap Rmax Calculation:
+  - The maximum radius (Rmax) of the endcap is now calculated automatically based on barrel detector geometry, which its last layer encloses the endcap within it. Resulting in reducing the need for parameters manual adjustments.
+  - It also simplifies changes to the number of layers, as Rmax no longer needs to be adapted manually for each design.
+  
+  2. Fixed Negative Endcap Layering Order:
+  
+  - Corrected the ordering of layers in the negative endcap to ensure proper reconstruction and simulation consistency.
+  - This fix addresses issues where layer sequences in negative endcap were previously inverted, improving track propagation and hit association.
+
+* 2025-10-13 Juan Miguel Carceller ([PR#525](https://github.com/key4hep/k4geo/pull/525))
+  - Do not run tests that require the beampipe files when not downloading them, since they will fail
+
+* 2025-10-13 Andrea Sciandra ([PR#523](https://github.com/key4hep/k4geo/pull/523))
+  - FCC-ee ALLEGRO detector concept: include plugins attaching additional info to the geometry, needed to generate `edm4hep::TrackerHitPlane`.
+
+* 2025-10-06 Alvaro Tolosa Delgado ([PR#522](https://github.com/key4hep/k4geo/pull/522))
+  - Refactor of the ARC DDSim configuration example, used in CI. The main change is that hit cellID assignment now works correctly, thanks to consistent handling between the optical physics configuration (SD not triggered at boundaries) and the DD4hep SD action for the optical tracker.
+
+# v00-23
+
+* 2025-10-01 sss ([PR#517](https://github.com/key4hep/k4geo/pull/517))
+  - Code cleanups in the segmentation classes.
+
+* 2025-09-30 Paolo Andreetto ([PR#508](https://github.com/key4hep/k4geo/pull/508))
+  - Add the MuSIC detector concept geometry. (Ported from muon collider fork)
+
+* 2025-09-25 sss ([PR#516](https://github.com/key4hep/k4geo/pull/516))
+  - Small cleanup of HCalTileBarrel_01_v02_geo: take the number of segments from the XML file rather than recalculating in C++.
+
+* 2025-09-19 sss ([PR#514](https://github.com/key4hep/k4geo/pull/514))
+  - Fix overlaps in the tile hcal barrel.
+
+* 2025-09-18 Juan Miguel Carceller ([PR#515](https://github.com/key4hep/k4geo/pull/515))
+  - Add override to fix warnings in Clang, fix variable names in docs and add missing includes to the FCCSWHCalPhi segmentations
+
+* 2025-09-18 sss ([PR#513](https://github.com/key4hep/k4geo/pull/513))
+  - Update outdated comment in FCCSWGridModuleThetaMerged_k4geo::position.
+
+* 2025-09-18 sss ([PR#511](https://github.com/key4hep/k4geo/pull/511))
+  - Make sure segmentation classes properly override the virtual neighbours() method for the FCCSWHcalPhi segmentations.
+
+* 2025-09-15 sss ([PR#512](https://github.com/key4hep/k4geo/pull/512))
+  - Small code cleanup in a few files to remove the use of exceptions for normal control flow.
+
+* 2025-09-10 Juan Miguel Carceller ([PR#510](https://github.com/key4hep/k4geo/pull/510))
+  - Remove a default destructor that is not needed in `DRparamBase_k4geo.h`
+
+* 2025-09-10 Sanghyun Ko ([PR#486](https://github.com/key4hep/k4geo/pull/486))
+  - Use the front end instead of the rear end for the default DRC calo hit position
+  - Added a dedicated function to calculate the rear end position of the fiber DRC cells (only needed for the DRC digitizer)
+  - Made the neighborhood definition of the fiber DRC configurable via a compact file
+  - Fixed a bug that the fiber DRC SD action did not take the full active volume of the scintillation fiber for the energy deposit
+
+* 2025-09-09 Robyn Evren ([PR#499](https://github.com/key4hep/k4geo/pull/499))
+  - New variables added for partial construction of SCEPCal
+
+* 2025-09-09 Robyn Evren ([PR#488](https://github.com/key4hep/k4geo/pull/488))
+  - added variables to allow for choice of phi segment and number of towers loaded.
+  - altered for-loops for continuous phi segments and forward only tower placement
+
+* 2025-08-27 Leonhard Reichenbach ([PR#507](https://github.com/key4hep/k4geo/pull/507))
+  - fix: [CLD_o2_v08] set tracking_volume parallelworld to not be connected
+
+* 2025-08-18 Thomas Madlener ([PR#505](https://github.com/key4hep/k4geo/pull/505))
+  - Set the helicity for the MCParticle once it becomes available. See [EDM4hep#404](https://github.com/key4hep/EDM4hep/pull/404) and [DD4hep#1488](https://github.com/AIDASoft/DD4hep/pull/1488) for more details.
+
+* 2025-08-18 Andre Sailer ([PR#504](https://github.com/key4hep/k4geo/pull/504))
+  - Lumical_o1_v01: only set calorimeter type flags for detectors with sensitive elements, otherwise use SUPPORT and AUXILIARY. Fixes #495
+
+* 2025-08-11 Federico Meloni ([PR#503](https://github.com/key4hep/k4geo/pull/503))
+  - Muon collider compact files are installed in k4geo/share
+
+* 2025-08-05 jmcarcell ([PR#502](https://github.com/key4hep/k4geo/pull/502))
+  - Update tests to allow running them without installing (i.e. we don't need to run `make install` or `ninja install` before running the tests
+  - Remove "test_IDEA_with_DRC_o1_v03" that was duplicated, keep only the one that simulates electrons
+
+* 2025-07-31 Kevin Nelson ([PR#480](https://github.com/key4hep/k4geo/pull/480))
+  Add a straw tube tracker for ALLEGRO concept.  The implementation was discussed at the FCC Full Sim Meeting on May 28: https://indico.cern.ch/event/1551837/#71-straw-tube-tracker-implemen.  This discussion included the memory load of the straw concept, which is on the order of 200MB.  The logical volume count is minimized by sharing logical tube volumes for each multilayer, however due to the use of cylindrical tube geometry the number of faces is large.
+  
+  The straw tracker concept uses thin-wall straws (12um) to achieve high spatial resolution.  The main possible advantage over a drift chamber concept is a modular construction with each readout channel corresponding to a single unit.  Additionally, because each tube is a single unit there are no B field correction factors needed to compute spatial position, and it is expected that the straws may achieve a slightly higher single hit position resolution compared to a drift chamber.
+  
+  Changes:
+   - Create new ALLEGRO version o2_v01 with straw tracker
+   - Corresponding READMEs in ALLEGRO and detector/tracker
+   - Straw tracker C++ implementation in detector/tracker folder
+   - Uses same dimensions as drift chamber for easy interchange of the two tracker concepts
+   - Both .xml and .cpp code for straw tracker have readable, useful comments
+   - For ALLEGRO_o2_v01 ONLY (the straw tube implementation), extend the silicon wrapper z extent to +/-3m to make full use of the available space
+   - Default straw tracker implementation has +/-2 degree stereo angle alternating for even/odd multilayers
+   - Straw tracker tube size matches IDEA for innermost cells (8mm) and increases linearly with radial distance (saturating at 2.5cm diameter tubes) from interaction point to minimize total N tubes, which minimizes multiple scattering and improves resolution.
+
+* 2025-07-29 jmcarcell ([PR#500](https://github.com/key4hep/k4geo/pull/500))
+  - Use . instead of -> for objects that are not pointers
+
+* 2025-07-29 Daniel Jeans ([PR#483](https://github.com/key4hep/k4geo/pull/483))
+  - FieldMapBrBz: Correct bug in the conversion of a radial field component to x-y components. Previously x and y were interchanged.
+
+* 2025-07-25 Andreas Loeschcke Centeno ([PR#494](https://github.com/key4hep/k4geo/pull/494))
+  - Updated the `stereosign` bitfield in the IDEA DriftChamber to host two bits
+
+* 2025-07-18 varnes ([PR#492](https://github.com/key4hep/k4geo/pull/492))
+  This PR incorporates two bug fixes and one new feature in ECalEndcap_Turbine_o1_v03:
+  
+  Bug fixes: 
+  
+  1) Fix a 1 cm overlap where outer support ring extended beyond the LAr bath
+  2) Fix duplicated volume errors when running in calibration mode (i.e. with electrode, absorber, glue, and cladding all set to sensitive
+  
+  New feature: add mechanical support structure behind calorimeter.  Note that this is a placeholder at the moment, with the final shape/size pending engineering studies.
+
+* 2025-07-14 Sanghyun Ko ([PR#493](https://github.com/key4hep/k4geo/pull/493))
+  - Fix build failure when `K4GEO_USE_LCIO=OFF`
+
+* 2025-07-08 Giovanni Marchiori ([PR#490](https://github.com/key4hep/k4geo/pull/490))
+  - Change ALLEGRO calorimeter types from BirksLawCalorimeterSD and SimpleCalorimeterSD to Geant4ScintillatorCalorimeter. This does not affect the behaviour (the same action is used) but  removes the "Sensitive type: Unknown" warning in the output.
+
+* 2025-07-07 Giovanni Marchiori ([PR#489](https://github.com/key4hep/k4geo/pull/489))
+  - Fix Rmax of muon tagger barrel and response type of muon tagger endcap for ALLEGRO
+
+* 2025-07-03 Andre Sailer ([PR#478](https://github.com/key4hep/k4geo/pull/478))
+  - CLD_o2_v08: new detector model taking into account Birks Law for the scintillator hcal.
+
+* 2025-06-30 BrieucF ([PR#487](https://github.com/key4hep/k4geo/pull/487))
+  - Improve ALLEGRO_o1_v03 ECAL visual rendering
+
+* 2025-06-25 wonyongc ([PR#443](https://github.com/key4hep/k4geo/pull/443))
+  - Added Segmented Crystal EM Precision Calorimeter (SCEPCal)
+  - Separate Main/Timing layer subdetectors
+  - Separate readout collections for edep, S/C photon counts using Geant4CalorimeterHit/edm4hep::SimCalorimeterHit
+  - Support different F/R crystal granularities in main layer
+  - Single, pure-projective timing layer
+  - New main layer projective crack migitation scheme with angular offset
+  - Added OpticalSurfaces
+
+* 2025-06-23 Nazar Bartosik ([PR#469](https://github.com/key4hep/k4geo/pull/469))
+  - Add the "historic" (i.e. not MAIA or MuSIC) muon collider geometries to `MuColl/MuColl/compact`
+
+* 2025-06-19 Federico Meloni ([PR#468](https://github.com/key4hep/k4geo/pull/468))
+  - Add the `MAIA` muon collider detector concept
+
+* 2025-06-16 Sanghyun Ko ([PR#485](https://github.com/key4hep/k4geo/pull/485))
+  - Add detector type flag for IDEA o1 DRC
+
+* 2025-06-12 jmcarcell ([PR#482](https://github.com/key4hep/k4geo/pull/482))
+  - Fix pre-commit after updating to LLVM 20
+
+# v00-22
+
+* 2025-05-27 Archil Durglishvili ([PR#479](https://github.com/key4hep/k4geo/pull/479))
+  - ALLEGRO_o1_v03: Birks constant value is set for Polystyrene scintillator used by HCal. This fixed the abnormal response to hadrons.
+
+* 2025-05-27 Zhibo Wu ([PR#458](https://github.com/key4hep/k4geo/pull/458))
+  - Crosstalk coefficients can be provided as input argument in the `det::crosstalk::getNeighboursModuleThetaMerged` function
+  - No impact on other parts of k4geo, but [k4RecCalorimeter](https://github.com/HEP-FCC/k4RecCalorimeter/blob/main/RecFCCeeCalorimeter/src/components/CreateFCCeeCaloXTalkNeighbours.cpp) needs to be updated accordingly.
+
+* 2025-05-22 Sanghyun Ko ([PR#477](https://github.com/key4hep/k4geo/pull/477))
+  - Follow up fix of #471 & protecting from an exception by `std::map::at`
+
+* 2025-05-14 Thomas Madlener ([PR#470](https://github.com/key4hep/k4geo/pull/470))
+  - Add a `CODEOWNERS` file to designate ownership to different parts of the repository in order to facilitate review and approval processes.
+
+* 2025-05-13 Sanghyun Ko ([PR#471](https://github.com/key4hep/k4geo/pull/471))
+  - Developed neighboring CellID finding algorithm for IDEA_o1 DRC
+  - Bug fix of the CellID position calculation of `GridDRcalo_k4geo`
+
+* 2025-04-29 Leonhard Reichenbach ([PR#453](https://github.com/key4hep/k4geo/pull/453))
+  - CLD_o2_v07: made tracking volume actually parallel
+
+* 2025-04-25 Thomas Madlener ([PR#467](https://github.com/key4hep/k4geo/pull/467))
+  - Add a `clang-format` hook to our pre-commit configuration to actually enforce the formatting that we expect via `.clang-format`.
+
+* 2025-04-24 Erich Varnes ([PR#456](https://github.com/key4hep/k4geo/pull/456))
+  This PR adds the ability to merge readout cells with the same z and rho indices in adjacent absorber blades.  The number of blades to merge in each wheel is controlled by the xml file.
+  
+  Also, some bugs in calculating the positions of the cells were fixed.
+
+* 2025-04-17 Sanghyun Ko ([PR#466](https://github.com/key4hep/k4geo/pull/466))
+  - Revert dual-readout version change of `README.md` in #465
+
+* 2025-04-14 Sanghyun Ko ([PR#465](https://github.com/key4hep/k4geo/pull/465))
+  - Added DDRec extension (`dd4hep::rec::LayeredCalorimeterData`) for DRC IDEA_o1 to provide necessary detector dimensions to the downstream
+
+* 2025-04-14 sss ([PR#463](https://github.com/key4hep/k4geo/pull/463))
+  - Fix a typo in comments.
+
+* 2025-04-13 Sanghyun Ko ([PR#459](https://github.com/key4hep/k4geo/pull/459))
+  - Switch monolithic DRC's calo hit type to edm4hep::SimCalorimeterHit to store positions
+
+* 2025-04-12 sss ([PR#462](https://github.com/key4hep/k4geo/pull/462))
+  - Adjust ALLEGRO HCal endcap (HCalThreePartsEndcap) cell positions so that they are symmetric under z-inversion.
+
+* 2025-04-11 Giovanni Marchiori ([PR#461](https://github.com/key4hep/k4geo/pull/461))
+  - Implement cellDimensions method for two segmentation classes used in the readout of ALLEGRO subdetectors
+  - Properly calculate and save as caloData the cell sizes for the noble liquid inclined barrel EM calorimeter, for the HCAL barrel calorimeter and for the SimpleCylinder detector used for the muon system
+
+* 2025-04-11 mahmoudali2 ([PR#444](https://github.com/key4hep/k4geo/pull/444))
+  - Last touches on muon-system adoption for DDPlanarDigi( it finally works with MS).
+  - Reduced number of segmentation.
+  - Created a string for muon system readout to be called in DDPlanarDigi. (`${MuonSystemReadoutID}`)
+  - Made the surfaces dimensions = 2 instead of 1.
+
+* 2025-04-08 Victor Schwan ([PR#428](https://github.com/key4hep/k4geo/pull/428))
+  - change the MDI version of the ILD FCCee models to `MDI_o1_v01`
+  - minor: remove some trailing whitespaces in the ILD FCCee config files
+
+* 2025-04-04 Sanghyun Ko ([PR#454](https://github.com/key4hep/k4geo/pull/454))
+  - Migrate SiPM efficiency to HEP-FCC/k4RecCalorimeter#145
+
+* 2025-03-26 jmcarcell ([PR#452](https://github.com/key4hep/k4geo/pull/452))
+  - Remove the NeighbourSurfacesData extension in `TrackerBarrel_o1_v06_geo` since it is not used, so we don't need to fill it every time a detector using `TrackerBarrel_o1_v06_geo` is built
+
+* 2025-03-25 jmcarcell ([PR#451](https://github.com/key4hep/k4geo/pull/451))
+  - Fix compiler warnings caught with clang 19
+  - Add a missing `#include <list>` that will be needed with https://github.com/AIDASoft/DD4hep/pull/1432
+
+* 2025-03-25 jmcarcell ([PR#450](https://github.com/key4hep/k4geo/pull/450))
+  - Exit a loop earlier and cache a map lookup in TrackerBarrel_o1_v06_geo
+
+* 2025-03-25 armin.ilg ([PR#442](https://github.com/key4hep/k4geo/pull/442))
+  - Fixing IDEA vertex detector dimensions
+  - Covering gaps in detector coverage at theta=90 degrees
+
+* 2025-03-20 Giovanni Marchiori ([PR#448](https://github.com/key4hep/k4geo/pull/448))
+  - Fix envelope of endcap turbine saved in detector data extension for reconstruction
+
+* 2025-03-19 Giovanni Marchiori ([PR#446](https://github.com/key4hep/k4geo/pull/446))
+  - Update ALLEGRO tracker_region zmaz, rmax constants to also include the wrapper
+
+* 2025-03-19 Giovanni Marchiori ([PR#445](https://github.com/key4hep/k4geo/pull/445))
+  - Set detector type flag for the IDEA_o1_v03 drift chamber (this propagates to other detectors using the drift chamber)
+
+* 2025-03-19 Giovanni Marchiori ([PR#441](https://github.com/key4hep/k4geo/pull/441))
+  - port allegro-04 (minimal) changes back to v03 and remove v04
+
+* 2025-03-12 Sanghyun Ko ([PR#440](https://github.com/key4hep/k4geo/pull/440))
+  - Modified CTests for IDEA & Allegro to not to shoot particles to (0,0,1)
+
+* 2025-03-12 BrieucF ([PR#351](https://github.com/key4hep/k4geo/pull/351))
+  - Include common review comments in the PR template
+
+* 2025-02-27 Giovanni Marchiori ([PR#439](https://github.com/key4hep/k4geo/pull/439))
+  - Adds to ECalEndcap_Turbine_o1_v03_geo the code that fills the dd4rec calorimeter data (type and envelope)
+
+* 2025-02-24 Giovanni Marchiori ([PR#438](https://github.com/key4hep/k4geo/pull/438))
+  - Reverts change of HCal barrel readout introduced by mistake in https://github.com/key4hep/k4geo/pull/437
+
+* 2025-02-23 Giovanni Marchiori ([PR#437](https://github.com/key4hep/k4geo/pull/437))
+  - fixes a problem where compact files for two different detectors were using the same names for different constants
+
+* 2025-02-23 mahmoudali2 ([PR#436](https://github.com/key4hep/k4geo/pull/436))
+  - Adding general surface plugin for IDEA muon-system.
+  - Fixing of the hierarchy of the detElemnt (the former one had errors when running with surfaces).
+  - Now we have ~ 7256 surfaces, but 'ddPlanarDigi' still complaining that it doesn't see surfaces!
+
+* 2025-02-22 Erich Varnes ([PR#426](https://github.com/key4hep/k4geo/pull/426))
+  This PR is to support v3 of the ECal endcap turbine geometry. In this version there is flexibility to set parameters separately for the three wheels, to calibrate the response in both dimensions along the surface of a blade, and the segment the readout in both directions as well. The readout unit cells are allowed to be smaller than the calibration cells.
+  
+  (Note that the above changes were implemented in two steps, with the flexibility to set parameters separately introduced in "v2" of the geometry, and the remaining changes in v3. v2 was never included in a pull request.)
+
+* 2025-02-20 Giovanni Marchiori ([PR#433](https://github.com/key4hep/k4geo/pull/433))
+  - Fixes bug in calculation of radial distance between digitised hit position and inner radius of layer for inclined ecal barrel. The information is possibly used by reconstruction algorithms downstream (e.g. pandora)
+
+* 2025-02-14 jmcarcell ([PR#434](https://github.com/key4hep/k4geo/pull/434))
+  - Add LANGUAGES CXX to CMakeLists.txt to disable checks for a C compiler
+
+* 2025-02-12 Alvaro Tolosa Delgado ([PR#431](https://github.com/key4hep/k4geo/pull/431))
+  - Re-enable tests that depend on data extension of the drift chamber. This is a follow up of a previous PR, https://github.com/key4hep/k4geo/pull/400
+
+* 2025-02-11 Giovanni Marchiori ([PR#419](https://github.com/key4hep/k4geo/pull/419))
+  - Use theta rather than eta grid for muon tagger readout in ALLEGRO
+  - Add detector type and calorimeter data to various detectors, for pandora PFA
+  - Add simple cylinder geometry v02 with calo data and possibility to use it for the endcap with both endcaps created within the same volume
+  - Add simple cylinder geometry v03 which introduces longitudinal segmentation
+
+* 2025-02-07 jmcarcell ([PR#415](https://github.com/key4hep/k4geo/pull/415))
+  - Change lcgeo_DIR to k4geo_DIR for all files in the repository
+
+* 2025-02-04 sss ([PR#423](https://github.com/key4hep/k4geo/pull/423))
+  - Fix cell position calculation for the Allegro ECal.
+
+* 2025-01-30 Sanghyun Ko ([PR#367](https://github.com/key4hep/k4geo/pull/367))
+  - Skip the scintillation optical generation for the (monolithic) DRC and migrate to the `Geant4RegexSensitivesConstruction`.
+
+* 2025-01-29 Victor Schwan ([PR#424](https://github.com/key4hep/k4geo/pull/424))
+  - collect the files of the individual MDI versions in a “global” MDI version configuration file in the folder of this version
+  - avoid redundant specification of the MDI version number in each file name of each component of the MDI version (single source of truth)
+
+* 2025-01-28 Victor Schwan ([PR#425](https://github.com/key4hep/k4geo/pull/425))
+  - add Default Material to ILD as well
+  - minor change to improve the readability in config of ILD_FCCee_v02.xml
+
+* 2025-01-24 Alvaro Tolosa Delgado ([PR#422](https://github.com/key4hep/k4geo/pull/422))
+  - Add Default material to CLD o4 v5 material file, so it can be used with CAD models. 
+  - Add simulation test of 1 event for CLD o4 v5
+
+* 2025-01-24 jmcarcell ([PR#400](https://github.com/key4hep/k4geo/pull/400))
+  - Improve the check for DCH_info.h from DD4hep. It was added in version 1.29 so if the version is below that don't use it.
+
+* 2025-01-23 Lorenzo Pezzotti ([PR#413](https://github.com/key4hep/k4geo/pull/413))
+  - A new subdetector (DRBarrelTubes_o1_v01) is included. It is the dual-readout barrel calorimeter built exploiting the Hidra-like capillary-tubes-based technology. Together with the endcap just merged, it completes the hadronic calorimeter of the IDEA_o2 concept.
+  - The IDEA_o2 muon system dimensions are adjusted to avoid overlaps with the barrel dual-readout calorimeter: (BarrelFirstLayerRadius=4630mm, BarrelLength=9260mm, EndcapFirstLayerZOffset=4630mm, EndcapLayersOuterRadius=5450mm)
+  - The custom DRTubes sensitive detector action was extended to be used in both the endcap (DREndcapTubes) and the barrel (DRBarrelTubes) subdetectors.
+
+* 2025-01-22 scott snyder ([PR#418](https://github.com/key4hep/k4geo/pull/418))
+  - Fix potential uses of dangling temporaries.
+
+* 2025-01-03 jmcarcell ([PR#417](https://github.com/key4hep/k4geo/pull/417))
+  - Do not set the color flow from MCParticles, needed after https://github.com/key4hep/EDM4hep/pull/389
+
+* 2024-12-19 Alvaro Tolosa Delgado ([PR#416](https://github.com/key4hep/k4geo/pull/416))
+  - The drift chamber cell shape has been updated to a composite design, improving navigation speed in simulations by factor 10. To revert to the original twisted tube shape, add the optional `useG4TT` tag in the detector section.
+
+* 2024-12-15 Jana ([PR#412](https://github.com/key4hep/k4geo/pull/412))
+  - CLD_o4_v05: Fixing LAr_ECalBarrel.xml constants name (was changed by mistake in #361)
+
+* 2024-12-06 Lorenzo Pezzotti ([PR#411](https://github.com/key4hep/k4geo/pull/411))
+  - A new subdetector for the dual-readout capillary-tubes-based endcap calorimeter is included as discussed [here](https://indico.cern.ch/event/1439207/contributions/6056623/attachments/2903299/5092292/lopezzot_fccsim_2472024.pdf)
+  - As INFN recently changed the baseline of the IDEA detector, a new IDEA_o2 XML file is created accordingly. It includes the new `DREndcapTubes` subdetector, changes the solenoid inner radius and removes the preshower. XML files for IDEA_o2 dimensions and materials are included as well. IDEA_o2 will be completed with the new crystal em calorimeter and the dual-readout capillary-tubes-based barrel calorimeter.
+  - A new example `example/SteeringFile_IDEA_o2_v01.py` is included to run a simulation with the IDEA_o2 concept.
+  - A new SDAction (`DRTubesSDAction`) is included and applied to the `DREndcapTubes` subdetector via `regexSD` in `example/SteeringFile_IDEA_o2_v01.py`, this speeds up the event rate w.r.t. previous dual-readout calorimetry simulations and reduces the memory fooprint as explained [here](https://indico.cern.ch/event/1457476/contributions/6136107/attachments/2929865/5144647/lopezzot_fccsim_1892024.pdf)
+
+* 2024-12-03 Archil Durglishvili ([PR#409](https://github.com/key4hep/k4geo/pull/409))
+  - HCalBarrel_TileCal_v03.xml and HCalEndcaps_ThreeParts_TileCal_v03.xml files have been created with new readouts: phi-theta and phi-row segmentation
+  - Two new segmentation classes are created for HCal: FCCSWHCalPhiTheta_k4geo and FCCSWHCalPhiRow_k4geo
+    - New segmentation classes can calculate the global positions of the cells and determine the cell neighbours for TopoClustering
+
+* 2024-11-14 Swathi Sasikumar ([PR#361](https://github.com/key4hep/k4geo/pull/361))
+  - This updates version ECalBarrel_NobelLiquid_InclinedTrapezoid_o1_v02_geo.cpp and ECalBarrel_NobelLiquid_InclinedTrapezoid_o1_v03_geo.cpp with layered calorimeter data for PandoraPFA as given in ECalBarrel_NobelLiquid_InclinedTrapezoid_o1_v01_geo.cpp
+  - Update on the compact file LAr_ECalBarrel.xml based on the latest parameters and names...
+
+* 2024-11-08 Giovanni Marchiori ([PR#407](https://github.com/key4hep/k4geo/pull/407))
+  - Make material in 1st layer of noble-liquid ECAL absorber configurable. Set by default to G10 rather than LAr.
+
+* 2024-10-25 Daniel Jeans ([PR#404](https://github.com/key4hep/k4geo/pull/404))
+  - fix some inconsistent definitions of materials used in ILD simulation (sum of fractions != 1.000)
+  - adjust composition of RPC gas to R134a:0.93 + CO2:0.05 + SF6:0.02 [exchange 5% isoButane for CO2, as suggested by G. Grenier]
+
+* 2024-10-25 Victor Schwan ([PR#392](https://github.com/key4hep/k4geo/pull/392))
+  - formatting and refactorization
+  - `material_plots_2D.py`:
+    - `angleDef` is a choice parameter + `thetaRad` choice added
+    - `outputDir` option added
+  - `material_scan_2d.py`:
+    - argParser added (`compactFile`,`outputFileBase`, `angleDef`)
+    - `outputDir` option added
+
+* 2024-10-17 tmadlener ([PR#402](https://github.com/key4hep/k4geo/pull/402))
+  - Fix the CI badge and add a zenodo badge to the README
+
+* 2024-10-17 Daniel Jeans ([PR#390](https://github.com/key4hep/k4geo/pull/390))
+  - Fix severe overlaps in ILD_l5_v11 inner tracker (outer barrel layer)
+  - Introduce new experimental models ILD_FCCee_v01 and ILD_FCCee_v02 under FCCee/ILD_FCCee directory
+  -- MDI from FCCee common MDI area
+  -- vertex & lumi cal identical to CLD_o2_v07
+  -- for ILD_FCCee_v01: inner tracker now based on TrackerBarrel_o1_v06 (adapted from CLD_o2_v07), TPC inner radius slightly increased 329 -> 365 mm to avoid MDI envelope
+  -- for ILD_FCCee_v02: inner tracker identical to CLD_o2_v07, TPC inner radius significantly increased 329 -> 701 mm to accommodate larger inner tracker
+  -- no ECAL ring, LHCAL, beamcal
+  -- other subdetectors same as ILD_l5_v02
+  -- some moving/renaming of definitions in ILD_common_v02 was necessary
+
+* 2024-10-16 BrieucF ([PR#403](https://github.com/key4hep/k4geo/pull/403))
+  - Lower IDEA drift chamber verbosity
+
 # v00-21-00
 
 * 2024-10-02 mahmoudali2 ([PR#401](https://github.com/key4hep/k4geo/pull/401))

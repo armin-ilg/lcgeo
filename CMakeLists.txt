@@ -1,4 +1,8 @@
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
+
+if( POLICY CMP0167 )
+  cmake_policy(SET CMP0167 NEW)
+endif()
 
 #---------------------------
 set( PackageName k4geo )
@@ -8,7 +12,7 @@ project(${PackageName} LANGUAGES CXX)
 
 # project version
 SET( ${PackageName}_VERSION_MAJOR 0 )
-SET( ${PackageName}_VERSION_MINOR 21 )
+SET( ${PackageName}_VERSION_MINOR 24 )
 SET( ${PackageName}_VERSION_PATCH 0 )
 
 SET( ${PackageName}_VERSION "${${PackageName}_VERSION_MAJOR}.${${PackageName}_VERSION_MINOR}" )
@@ -28,7 +32,7 @@ set(CMAKE_INSTALL_CMAKEDIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
 IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   SET( CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR} CACHE PATH
-    "install prefix path  - overwrite with -D CMAKE_INSTALL_PREFIX = ..." 
+    "install prefix path  - overwrite with -D CMAKE_INSTALL_PREFIX = ..."
     FORCE )
   MESSAGE(STATUS "CMAKE_INSTALL_PREFIX is ${CMAKE_INSTALL_PREFIX} - overwrite with -D CMAKE_INSTALL_PREFIX" )
 ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -43,8 +47,7 @@ option(INSTALL_BEAMPIPE_STL_FILES "Download CAD files for building the detailed 
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-
-find_package(DD4hep REQUIRED COMPONENTS DDRec DDG4 DDParsers)
+find_package(DD4hep 1.31 REQUIRED COMPONENTS DDRec DDG4 DDParsers)
 
 find_package ( ROOT REQUIRED COMPONENTS Geom GenVector)
 message ( STATUS "ROOT_VERSION: ${ROOT_VERSION}" )
@@ -64,7 +67,7 @@ if(K4GEO_USE_LCIO)
   endif()
 endif()
 
-file(GLOB sources 
+file(GLOB sources
   ./detector/tracker/*.cpp
   ./detector/calorimeter/*.cpp
   ./detector/calorimeter/dual-readout/src/*.cpp
@@ -85,11 +88,14 @@ if(NOT K4GEO_USE_LCIO)
     TrackerBarrel_o1_v03_geo.cpp
     TrackerBarrel_o1_v04_geo.cpp
     TrackerBarrel_o1_v05_geo.cpp
+    TrackerBarrel_o1_v06_geo.cpp
     TrackerEndcap_o1_v05_geo.cpp
     TrackerEndcap_o2_v06_geo.cpp
+    StrawTubeTracker_o1_v01_geo.cpp
     VertexBarrel_detailed_o1_v01_geo.cpp
     VertexEndcap_o1_v05_geo.cpp
     ZPlanarTracker_geo.cpp
+    ZSegmentedPlanarTracker_geo.cpp
     )
   foreach(lcio_source ${lcio_sources})
     list(FILTER sources EXCLUDE REGEX "${lcio_source}")
@@ -117,6 +123,8 @@ file(GLOB G4sources
   ./plugins/DRCaloFastSimModel.h
   ./plugins/DRTubesSDAction.hh
   ./plugins/DRTubesSDAction.cpp
+  ./plugins/SCEPCal_MainSDAction.cpp
+  ./plugins/SCEPCal_TimingSDAction.cpp
 )
 
 if(DD4HEP_USE_PYROOT)
@@ -139,7 +147,7 @@ target_include_directories(${PackageName}   PRIVATE ${PROJECT_SOURCE_DIR}/detect
 target_include_directories(${PackageName}G4 PRIVATE ${PROJECT_SOURCE_DIR}/detector/calorimeter/dual-readout-tubes/include )
 
 target_link_libraries(${PackageName}   DD4hep::DDCore DD4hep::DDRec DD4hep::DDParsers ROOT::Core detectorSegmentations)
-target_link_libraries(${PackageName}G4 DD4hep::DDCore DD4hep::DDRec DD4hep::DDParsers DD4hep::DDG4 ROOT::Core podio::podioRootIO EDM4HEP::edm4hep ${Geant4_LIBRARIES})
+target_link_libraries(${PackageName}G4 DD4hep::DDCore DD4hep::DDRec DD4hep::DDParsers DD4hep::DDG4 ROOT::Core detectorSegmentations podio::podioRootIO EDM4HEP::edm4hep ${Geant4_LIBRARIES})
 
 if(K4GEO_USE_LCIO)
   target_link_libraries(${PackageName}   LCIO::lcio)
@@ -148,6 +156,13 @@ endif()
 
 #Create this_package.sh file, and install
 dd4hep_instantiate_package(${PackageName})
+if(EXISTS "${PROJECT_BINARY_DIR}/this${PackageName}.sh")
+  message(STATUS "this${PackageName}.sh created successfully.")
+  # Replace the K4GEO environment variable with the path to the source
+  file(APPEND "${PROJECT_BINARY_DIR}/this${PackageName}.sh" "\nexport K4GEO=\"${CMAKE_CURRENT_SOURCE_DIR}\"")
+else()
+  message(WARNING "this${PackageName}.sh was not created.")
+endif()
 
 add_subdirectory(detectorSegmentations)
 add_subdirectory(detectorCommon)
@@ -167,13 +182,13 @@ endif(BUILD_TESTING)
 
 #--- install remaining targets--------------------------
 FILE(GLOB hfiles "ILD/include/*.h")
-INSTALL(FILES ${hfiles} 
-  DESTINATION include/${PackageName} 
+INSTALL(FILES ${hfiles}
+  DESTINATION include/${PackageName}
   )
 
 #--- install compact files------------------------------
 if(INSTALL_COMPACT_FILES)
-  INSTALL(DIRECTORY CaloTB CLIC FCalTB FCCee ILD fieldmaps SiD DESTINATION share/k4geo )
+  INSTALL(DIRECTORY CaloTB CLIC FCalTB FCCee ILD fieldmaps MuColl SiD DESTINATION share/k4geo )
 endif()
 
 # create k4geoConfig and friends
@@ -210,7 +225,7 @@ if(INSTALL_BEAMPIPE_STL_FILES)
         )
     # Set main FCC url
     set(FCC_URL "https://fccsw.web.cern.ch/fccsw/filesForSimDigiReco")
-    set(STL_PATH "MDI_o1_v01/stl_files/Pipe_240430")
+    set(STL_PATH "stl_files/Pipe_240430")
 
     # Set the output directory where the file will be placed
     set(OUTPUT_DIR "${PROJECT_SOURCE_DIR}/FCCee/MDI/compact/${STL_PATH}")
@@ -238,6 +253,6 @@ if(INSTALL_BEAMPIPE_STL_FILES)
     endforeach()
 
     file(MAKE_DIRECTORY share/k4geo/FCCee)
-    INSTALL(DIRECTORY ${OUTPUT_DIR} DESTINATION share/k4geo/FCCee/MDI/compact/MDI_o1_v01/stl_files )
+    INSTALL(DIRECTORY ${OUTPUT_DIR} DESTINATION share/k4geo/FCCee/MDI/compact/stl_files )
 
 endif()

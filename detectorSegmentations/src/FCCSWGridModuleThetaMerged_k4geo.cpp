@@ -1,6 +1,7 @@
 #include "detectorSegmentations/FCCSWGridModuleThetaMerged_k4geo.h"
 
 #include "DD4hep/Detector.h"
+#include "DD4hep/Printout.h"
 #include "DD4hep/VolumeManager.h"
 #include <iostream>
 
@@ -10,11 +11,22 @@ namespace DDSegmentation {
   /// default constructor using an encoding string
   FCCSWGridModuleThetaMerged_k4geo::FCCSWGridModuleThetaMerged_k4geo(const std::string& cellEncoding)
       : GridTheta_k4geo(cellEncoding) {
+    commonSetup();
+  }
+
+  FCCSWGridModuleThetaMerged_k4geo::FCCSWGridModuleThetaMerged_k4geo(const BitFieldCoder* decoder)
+      : GridTheta_k4geo(decoder) {
+    commonSetup();
+  }
+
+  /// Initialization common to all ctors.
+  void FCCSWGridModuleThetaMerged_k4geo::commonSetup() {
     // define type and description
     _type = "FCCSWGridModuleThetaMerged_k4geo";
     _description = "Module-theta segmentation with per-layer merging along theta and/or module";
 
     // register all necessary parameters (additional to those registered in GridTheta_k4geo)
+    registerIdentifier("identifier_cryo", "Cell ID identifier for the cryostat", m_cryoID, "cryo");
     registerIdentifier("identifier_layer", "Cell ID identifier for layer", m_layerID, "layer");
     registerIdentifier("identifier_module", "Cell ID identifier for readout module", m_moduleID, "module");
     registerParameter("mergedCells_Theta", "Numbers of merged cells in theta per layer", m_mergedCellsTheta,
@@ -22,22 +34,11 @@ namespace DDSegmentation {
     registerParameter("mergedModules", "Numbers of merged modules per layer", m_mergedModules, std::vector<int>());
     GetNModulesFromGeom();
     GetNLayersFromGeom();
-  }
 
-  FCCSWGridModuleThetaMerged_k4geo::FCCSWGridModuleThetaMerged_k4geo(const BitFieldCoder* decoder)
-      : GridTheta_k4geo(decoder) {
-    // define type and description
-    _type = "FCCSWGridModuleThetaMerged_k4geo";
-    _description = "Module-theta segmentation with per-layer merging along theta and/or module";
-
-    // register all necessary parameters (additional to those registered in GridTheta_k4geo)
-    registerIdentifier("identifier_layer", "Cell ID identifier for layer", m_layerID, "layer");
-    registerIdentifier("identifier_module", "Cell ID identifier for module", m_moduleID, "module");
-    registerParameter("mergedCells_Theta", "Numbers of merged cells in theta per layer", m_mergedCellsTheta,
-                      std::vector<int>());
-    registerParameter("mergedModules", "Numbers of merged modules per layer", m_mergedModules, std::vector<int>());
-    GetNModulesFromGeom();
-    GetNLayersFromGeom();
+    m_cryoIndex = decoder()->index(m_cryoID);
+    m_layerIndex = decoder()->index(m_layerID);
+    m_thetaIndex = decoder()->index(fieldNameTheta());
+    m_moduleIndex = decoder()->index(m_moduleID);
   }
 
   FCCSWGridModuleThetaMerged_k4geo::~FCCSWGridModuleThetaMerged_k4geo() { delete m_layerInfo; }
@@ -47,10 +48,12 @@ namespace DDSegmentation {
     try {
       m_nModules = dd4hepgeo->constant<int>("ECalBarrelNumPlanes");
     } catch (...) {
-      std::cout << "Number of modules not found in detector metadata, exiting..." << std::endl;
+      dd4hep::printout(dd4hep::ERROR, "FCCSWGridModuleThetaMerged_k4geo",
+                       "Number of modules not found in detector metadata, exiting...");
       exit(1);
     }
-    std::cout << "Number of modules read from detector metadata and used in readout class: " << m_nModules << std::endl;
+    dd4hep::printout(dd4hep::INFO, "FCCSWGridModuleThetaMerged_k4geo",
+                     "Number of modules read from detector metadata and used in readout class = %d", m_nModules);
   }
 
   void FCCSWGridModuleThetaMerged_k4geo::GetNLayersFromGeom() {
@@ -58,29 +61,33 @@ namespace DDSegmentation {
     try {
       m_nLayers = dd4hepgeo->constant<int>("ECalBarrelNumLayers");
     } catch (...) {
-      std::cout << "Number of layers not found in detector metadata, exiting..." << std::endl;
+      dd4hep::printout(dd4hep::ERROR, "FCCSWGridModuleThetaMerged_k4geo",
+                       "Number of layers not found in detector metadata, exiting...");
       exit(1);
     }
-    std::cout << "Number of layers read from detector metadata and used in readout class: " << m_nLayers << std::endl;
+    dd4hep::printout(dd4hep::INFO, "FCCSWGridModuleThetaMerged_k4geo",
+                     "Number of layers read from detector metadata and used in readout class = %d", m_nLayers);
   }
 
   /// Tabulate the cylindrical radii of all layers, as well as the
   /// local x and z components needed for the proper phi offset.
   std::vector<FCCSWGridModuleThetaMerged_k4geo::LayerInfo>
   FCCSWGridModuleThetaMerged_k4geo::initLayerInfo(const CellID& cID) const {
+
+    dd4hep::printout(dd4hep::INFO, "FCCSWGridModuleThetaMerged_k4geo", "Precalculating position info of radial layers");
     dd4hep::Detector* dd4hepgeo = &(dd4hep::Detector::getInstance());
     VolumeManager vman = VolumeManager::getVolumeManager(*dd4hepgeo);
 
     std::vector<LayerInfo> out;
     out.reserve(m_nLayers);
     VolumeID vID = cID;
-    _decoder->set(vID, m_thetaID, 0);
+    decoder()->set(vID, m_thetaIndex, 0);
     for (int l = 0; l < m_nLayers; l++) {
-
+      dd4hep::printout(dd4hep::INFO, "FCCSWGridModuleThetaMerged_k4geo", "Layer = %d", l);
       // Look up a volume in layer l in the volume manager, and find its radius
       // by transforming the origin in the local coordinate system to global
       // coordinates.
-      _decoder->set(vID, m_layerID, l);
+      decoder()->set(vID, m_layerIndex, l);
       VolumeManagerContext* vc = vman.lookupContext(vID);
       Position wpos = vc->localToWorld({0, 0, 0});
       double rho = wpos.Rho();
@@ -114,7 +121,8 @@ namespace DDSegmentation {
         xloc = lpos2.X();
         zloc = lpos2.Z();
       }
-
+      dd4hep::printout(dd4hep::INFO, "FCCSWGridModuleThetaMerged_k4geo", "rho, xloc, zloc = %lf %lf %lf (cm)",
+                       rho / dd4hep::cm, xloc / dd4hep::cm, zloc / dd4hep::cm);
       out.emplace_back(rho, xloc, zloc);
     }
     return out;
@@ -125,6 +133,10 @@ namespace DDSegmentation {
 
     // Get the vector of layer info.  If it hasn't been made yet,
     // calculate it now.
+    // skip cells in the cryostat (if the cryostat is active, there are cells in there,
+    // but it has no longitudinal layers)
+    if (decoder()->get(cID, m_cryoIndex) != 0)
+      return Vector3D(0, 0, 0);
     const std::vector<LayerInfo>* liv = m_layerInfo.load();
     if (!liv) {
       auto liv_new = new std::vector<LayerInfo>(initLayerInfo(cID));
@@ -136,11 +148,11 @@ namespace DDSegmentation {
     }
 
     VolumeID vID = cID;
-    _decoder->set(vID, m_thetaID, 0);
+    decoder()->set(vID, m_thetaIndex, 0);
     int layer = this->layer(vID);
 
-    // debug
-    // std::cout << "cellID: " << cID << std::endl;
+    // debug (run ddsim with --printLevel 1 option to see these messages)
+    // dd4hep::printout(dd4hep::VERBOSE, "FCCSWGridModuleThetaMerged_k4geo", "cellID = %lu", cID);
 
     // Calculate the position in local coordinates.
     // The volume here has the cross-section of a cell in the x-z plane;
@@ -163,24 +175,24 @@ namespace DDSegmentation {
     double lTheta = thetaFromXYZ(globalPosition);
 
     // calculate theta bin with original segmentation
-    int thetaBin = positionToBin(lTheta, m_gridSizeTheta, m_offsetTheta);
+    int thetaBin = positionToBin(lTheta, gridSizeTheta(), offsetTheta());
 
     // adjust theta bin if cells are merged along theta in this layer
     // assume that m_mergedCellsTheta[layer]>=1
     thetaBin -= (thetaBin % m_mergedCellsTheta[layer]);
 
     // set theta field of cellID
-    _decoder->set(cID, m_thetaID, thetaBin);
+    decoder()->set(cID, m_thetaIndex, thetaBin);
 
     // retrieve module number
-    int module = _decoder->get(vID, m_moduleID);
+    int module = decoder()->get(vID, m_moduleIndex);
 
     // adjust module number if modules are merged in this layer
     // assume that m_mergedModules[layer]>=1
     module -= (module % m_mergedModules[layer]);
 
     // set module field of cellID
-    _decoder->set(cID, m_moduleID, module);
+    decoder()->set(cID, m_moduleIndex, module);
 
     return cID;
   }
@@ -191,7 +203,7 @@ namespace DDSegmentation {
   /// merged ones - which will be then added on top of
   /// the phi of the volume containing the first cell
   /// by the positioning tool
-  double FCCSWGridModuleThetaMerged_k4geo::phi(const CellID& cID) const {
+  double FCCSWGridModuleThetaMerged_k4geo::phi(const CellID cID) const {
 
     // retrieve layer
     int layer = this->layer(cID);
@@ -201,46 +213,44 @@ namespace DDSegmentation {
     double phi = (m_mergedModules[layer] - 1) * M_PI / m_nModules;
 
     // debug
-    // std::cout << "layer: " << layer << std::endl;
-    // std::cout << "merged modules: " << m_mergedModules[layer] << std::endl;
-    // std::cout << "phi: " << phi << std::endl;
+    // dd4hep::printout(dd4hep::VERBOSE, "FCCSWGridModuleThetaMerged_k4geo", "layer = %d, merged modules = %d, phi =
+    // %lf",
+    //                  layer, m_mergedModules[layer], phi);
 
     return phi;
   }
 
   /// determine the polar angle based on the cell ID and the
   /// number of merged theta cells
-  double FCCSWGridModuleThetaMerged_k4geo::theta(const CellID& cID) const {
+  double FCCSWGridModuleThetaMerged_k4geo::theta(const CellID cID) const {
 
     // retrieve layer
     int layer = this->layer(cID);
 
     // retrieve theta bin from cellID and determine theta position
-    CellID thetaValue = _decoder->get(cID, m_thetaID);
-    double _theta = binToPosition(thetaValue, m_gridSizeTheta, m_offsetTheta);
+    CellID thetaValue = decoder()->get(cID, m_thetaIndex);
+    double _theta = binToPosition(thetaValue, gridSizeTheta(), offsetTheta());
 
     // adjust return value if cells are merged along theta in this layer
     // shift by (N-1)*half theta grid size
     // assume that m_mergedCellsTheta[layer]>=1
-    _theta += (m_mergedCellsTheta[layer] - 1) * m_gridSizeTheta / 2.0;
+    _theta += (m_mergedCellsTheta[layer] - 1) * gridSizeTheta() / 2.0;
 
     // debug
-    // std::cout << "layer: " << layer << std::endl;
-    // std::cout << "theta bin: " << thetaValue << std::endl;
+    // dd4hep::printout(dd4hep::VERBOSE, "FCCSWGridModuleThetaMerged_k4geo",
+    //                  "layer = %d, theta bin = %d, merged cells in theta = %d, theta = %lf", layer, thetaValue,
+    //                  m_mergedCellsTheta[layer], _theta);
     // std::cout << "gridSizeTheta, offsetTheta: " << m_gridSizeTheta << " , " << m_offsetTheta << std::endl;
-    // std::cout << "merged cells: " << m_mergedCellsTheta[layer] << std::endl;
-    // std::cout << "theta: " << _theta << std::endl;
-
     return _theta;
   }
 
   /// Extract the layer index fom a cell ID.
-  int FCCSWGridModuleThetaMerged_k4geo::layer(const CellID& cID) const { return _decoder->get(cID, m_layerID); }
+  int FCCSWGridModuleThetaMerged_k4geo::layer(const CellID cID) const { return decoder()->get(cID, m_layerIndex); }
 
   /// Determine the volume ID from the full cell ID by removing all local fields
   VolumeID FCCSWGridModuleThetaMerged_k4geo::volumeID(const CellID& cID) const {
     VolumeID vID = cID;
-    _decoder->set(vID, m_thetaID, 0);
+    decoder()->set(vID, m_thetaIndex, 0);
     return vID;
   }
 

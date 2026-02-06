@@ -5,11 +5,6 @@
 
 #include <string>
 
-// workaround for DD4hep v00-14 (and older)
-#ifndef DD4HEP_VERSION_GE
-#define DD4HEP_VERSION_GE(a, b) 0
-#endif
-
 static dd4hep::Ref_t create_detector(dd4hep::Detector& theDetector, dd4hep::xml::Handle_t element,
                                      dd4hep::SensitiveDetector sens) {
 
@@ -155,23 +150,20 @@ static dd4hep::Ref_t create_detector(dd4hep::Detector& theDetector, dd4hep::xml:
         dd4hep::Material slice_material = theDetector.material(compSlice.materialStr());
 
         bool isAbsorberStructure(false);
-        try {
+        if (compSlice.hasAttr(_Unicode(layerType))) {
           const std::string& sliceType = compSlice.attr<std::string>(_Unicode(layerType));
           if (sliceType.compare("holeForIncomingBeampipe") == 0) {
             isAbsorberStructure = true;
           } // else {
           //   throw std::runtime_error("Unknown type of slice in BeamCal, use \"absorber\" or nothing");
           // }//Do we want this to fail or not?
-        } catch (std::runtime_error& e) {
-          // std::cout << "Catching " << e.what()  << std::endl;
-          // std::cout << e.what()  << std::endl;
         }
 
         // Check if a separate outer_radius is declared.
         double outerR = bcalOuterR;
         try {
           outerR = compSlice.outer_radius();
-        } catch (std::runtime_error& e) {
+        } catch (std::runtime_error&) {
           // Nothing to catch. Everything is fine.
         }
 
@@ -204,14 +196,12 @@ static dd4hep::Ref_t create_detector(dd4hep::Detector& theDetector, dd4hep::xml:
         if (compSlice.isSensitive()) {
           slice_vol.setSensitiveDetector(sens);
 
-#if DD4HEP_VERSION_GE(0, 15)
           // Store "inner" quantities
           caloLayer.inner_nRadiationLengths = nRadiationLengths;
           caloLayer.inner_nInteractionLengths = nInteractionLengths;
           caloLayer.inner_thickness = thickness_sum;
           // Store scintillator thickness
           caloLayer.sensitive_thickness = slice_thickness;
-#endif
           // Reset counters to measure "outside" quantitites
           nRadiationLengths = 0.;
           nInteractionLengths = 0.;
@@ -234,11 +224,9 @@ static dd4hep::Ref_t create_detector(dd4hep::Detector& theDetector, dd4hep::xml:
 
       caloLayer.distance = bcalCentreZ + referencePosition;
 
-#if DD4HEP_VERSION_GE(0, 15)
       caloLayer.outer_nRadiationLengths = nRadiationLengths;
       caloLayer.outer_nInteractionLengths = nInteractionLengths;
       caloLayer.outer_thickness = thickness_sum;
-#endif
       caloLayer.cellSize0 = BeamCal_cell_size;
       caloLayer.cellSize1 = BeamCal_cell_size;
 

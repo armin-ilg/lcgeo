@@ -30,10 +30,12 @@ Sub-detector for the ecal endcaps, with the absorbers and readout boards arrange
 Initial implementation.  A custom segmentation that creates readout cells and constant radius and z is also included (FCCSWEndcapTurbine_k4geo).
 
 ### o1_v02
-Changes wrt o1_v01: Added flexibility to configure the wheels individual (to allow for example the possibiliity of having different blade angles in each).
+Changes wrt o1_v01: Added flexibility to configure the wheels individually (to allow for example the possibiliity of having different blade angles in each).
 
 ### o1_v03
-Changes wrt o1_v02: Modified the calibration "layers" to be a 2d grid in both dimensions on the surface of an absorber plate (which map to the rho and z dimensions in the global coordinate system), since the NL gap varies in both directions. The readout segmentation is also a 2d grid in the same coordinates, but the readout is allowed to be finer-grained than the calibration.
+Changes wrt o1_v02: Modified the calibration "layers" to be a 2d grid in both dimensions on the surface of an absorber plate (which map to the rho and z dimensions in the global coordinate system), since the NL gap varies in both directions. The readout segmentation is also a 2d grid in the same coordinates, but the readout is allowed to be finer-grained than the calibration. Also allows cells with the same rho/z indices to be merged across adjacent blades.  The number of blades to merge in each wheel is controlled by the xml.
+
+Also adds a mechanical support structure behind the calorimeter, though the actual specifications are still pending engineering studies.
 
 ## HCalTileBarrel
 This sub-detector makes calorimeter barrel. It is used in ALLEGRO detector concept.
@@ -53,15 +55,21 @@ Original version taken from [FCCDetectors](https://github.com/HEP-FCC/FCCDetecto
 ### o1_v02
 Changes wrt o1_v01: Added extension (LayeredCalorimeterData) to store radial layer radii and dimensions. To make this work, the whole code had to be reshuffled, but the way how the geometry and individual volumes are built remains the same as in o1_v01. 
 
-## dual-readout
+## Monolithic fiber dual-readout (subdirectory `dual-readout`)
 
-### o1_v03
+### o1_v01
 This sub-detector makes full 4-pi monolithic fiber dual-readout calorimeter.
 Inside the single tower (trapezoidal copper absorber), two types of optical fibers (Cherenkov and scintillation) are implemented. The readout (SiPM) is attached at the rear side of the tower. The tower is repeated in both eta and phi direction to cover both barrel and endcap region.
 
 Added an extension to (`LayeredCalorimeterData`) to store the barrel and endcap rmin, rmax, zmin, zmax.
+The definition of the topological neighborhood of cells is configurable via the xml file (function itself is defined in the `GridDRcalo_k4geo`).
 
-## dual-readout-tubes
+## Capillary tube dual-readout (subdirectory `dual-readout-tubes`)
 
-### o2_v01
+### o1_v01
 This folder containes the subdetectors (endcap + barrel) to make a full 4-pi fiber dual-readout calorimeter exploiting the INFN capillary-tubes technology. Each trapezoidal tower is constructed with brass capillary-tubes housing optical fibers (Cherenkov and scintillating). Endcap and barrel calorimeters are implemented ad separate subdetectors.
+
+## Segmented Crystal ECAL (SCEPCal)
+
+### o1_v01
+Introduced the segmented crystal ECAL with timing layer. The main crystals in the segmented layer can be configured in towers with varying front/rear granularities, see https://github.com/wonyongc/SCEPCal for images and a more thorough readme. The main layer is pseudo-projective with a controllable pointing offset from the IP. The timing layer is pure-projective. The main layer of segmented crystals and timing layer are implemented as separate subdetectors.
