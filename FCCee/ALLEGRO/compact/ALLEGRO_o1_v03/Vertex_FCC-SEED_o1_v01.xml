@@ -27,6 +27,7 @@
             <comment>Vertex Assembly</comment>
             <composite name="Kapton_on_beampipe"/>
             <composite name="VertexBarrel"/>
+            <composite name="VertexInnerBarrel_tube"/>
             <composite name="VertexEndcap"/>
             <composite name="VertexVerticalCable"/>
         </detector>
@@ -44,6 +45,7 @@
         <vis name="VTXPeripheryVis"         alpha="1.0" r="200/255" g="254/255" b="0.0"   showDaughters="true"  visible="true"/>    
         <vis name="RandomVis"            alpha="1.0" r="1.0" g="0.0"      b="0.4"       showDaughters="true"  visible="true"/>
         <vis name="SiVertexAir"          alpha="1.0" r="0" g="0"    b="0"       showDaughters="false"  visible="false"/>
+        <vis name="VTXIBTubeVis"  	     alpha="0.8" r="0.25"   	g="0.25"    b="0.2"   showDaughters="true"  visible="true"/>
     </display>
 
     <define>
@@ -128,7 +130,11 @@
         <constant name="VTXIB_SEED_zoffset4" value="-0.5*mm"/>
         <constant name="VTXIB_SEED_zoffset5" value="+0.5*mm"/>
 
-        <constant name="VTXIB_SEED_sensitive_thickness" value="50e-03*mm"/>
+        <constant name="VTXIB_SEED_insensitive_thickness_below"   value="40e-03*mm"/> <comment> Assume 40 µm of insensitive sensor thickness </comment>
+        <constant name="VTXIB_SEED_sensitive_thickness"           value="10e-03*mm"/> <comment> Assume 10 µm of sensitive sensor thickness, reflecting epi-layer thickness in TPSCo 65 nm process </comment>
+        <constant name="VTXIB_SEED_insensitive_thickness_above"   value="0e-03*mm"/> <comment> Assume no metal layer for powering </comment>
+        <constant name="VTXIB_SEED_total_sensor_thickness"        value="VTXIB_SEED_insensitive_thickness_below+VTXIB_SEED_sensitive_thickness+VTXIB_SEED_insensitive_thickness_above"/>
+
         <constant name="VTXIB_curved_nsegments" value="8"/>
         <constant name="VTXIB_curved_tolerance_r" value="0.040*mm"/> <!-- Needed for curved inner vertex as otherwise overlaps would be detected. -->
         <constant name="Kapton_curved_tolerance_r" value="0.030*mm"/> <!-- Needed for curved inner vertex as otherwise overlaps would be detected. -->
@@ -146,11 +152,11 @@
 
         <!-- <constant name="VTXIB_seg_phi_width"  value="VTXIB_SEED_sensor_phi_sensitive / VTXIB_curved_nsegments"/> -->
         <constant name="VTXIB_seg_phi_width"  value="VTXIB_SEED_sensor_phi_periphery"/>
-        <constant name="phi_offset_addons_1" value= "(-VTXIB_SEED_sensor_phi/2. + VTXIB_SEED_sensor_phi_periphery/2. - 0.2*mm )/(VTXIB_SEED_r1 + VTXIB_SEED_sensitive_thickness) * rad"/>
-        <constant name="phi_offset_addons_2"  value="(-VTXIB_SEED_sensor_phi/2. + VTXIB_SEED_sensor_phi_periphery/2. - 0.2*mm )/(VTXIB_SEED_r2 + VTXIB_SEED_sensitive_thickness) * rad"/>
-        <constant name="phi_offset_addons_3" value= "(-VTXIB_SEED_sensor_phi/2. + VTXIB_SEED_sensor_phi_periphery/2. - 0.2*mm )/(VTXIB_SEED_r3 + VTXIB_SEED_sensitive_thickness) * rad"/>
-        <constant name="phi_offset_addons_4" value= "(-VTXIB_SEED_sensor_phi/2. + VTXIB_SEED_sensor_phi_periphery/2. - 0.2*mm )/(VTXIB_SEED_r4 + VTXIB_SEED_sensitive_thickness) * rad"/>
-        <constant name="phi_offset_addons_5" value= "(-VTXIB_SEED_sensor_phi/2. + VTXIB_SEED_sensor_phi_periphery/2. - 0.2*mm )/(VTXIB_SEED_r5 + VTXIB_SEED_sensitive_thickness) * rad"/>
+        <constant name="phi_offset_addons_1" value= "(-VTXIB_SEED_sensor_phi/2. + VTXIB_SEED_sensor_phi_periphery/2. - 0.2*mm )/(VTXIB_SEED_r1 + VTXIB_SEED_total_sensor_thickness) * rad"/>
+        <constant name="phi_offset_addons_2"  value="(-VTXIB_SEED_sensor_phi/2. + VTXIB_SEED_sensor_phi_periphery/2. - 0.2*mm )/(VTXIB_SEED_r2 + VTXIB_SEED_total_sensor_thickness) * rad"/>
+        <constant name="phi_offset_addons_3" value= "(-VTXIB_SEED_sensor_phi/2. + VTXIB_SEED_sensor_phi_periphery/2. - 0.2*mm )/(VTXIB_SEED_r3 + VTXIB_SEED_total_sensor_thickness) * rad"/>
+        <constant name="phi_offset_addons_4" value= "(-VTXIB_SEED_sensor_phi/2. + VTXIB_SEED_sensor_phi_periphery/2. - 0.2*mm )/(VTXIB_SEED_r4 + VTXIB_SEED_total_sensor_thickness) * rad"/>
+        <constant name="phi_offset_addons_5" value= "(-VTXIB_SEED_sensor_phi/2. + VTXIB_SEED_sensor_phi_periphery/2. - 0.2*mm )/(VTXIB_SEED_r5 + VTXIB_SEED_total_sensor_thickness) * rad"/>
 
         <constant name="VTXIB_SEED_support_ring_len"    value="2.0*mm"/>   <!-- Z length of a ring -->
         <constant name="VTXIB_SEED_support_ring_dz"     value="VTXIB_SEED_support_ring_len/2.-VTXIB_SEED_support_ring_len"/>
@@ -166,12 +172,16 @@
     </define>
 
     <define> <comment> Kapton layer between the beam pipe and the first vertex layer for electrical insulation </comment>
-
         <constant name="VTXIB_SEED_Kapton_beampipe_thickness" value="0.1*mm"/> 
         <constant name="VTXIB_SEED_Kapton_beampipe_r" value="CentralBeamPipe_rmax+BeamPipeWidth"/> 
         <constant name="VTXIB_SEED_rmin_correction" value="0.15*mm"/>
     </define>
 
+    <define> <comment> Carbon fibre support tube holding the complete inner vertex </comment>
+        <constant name="VTXIB_tube_thickness" value="0.2*mm"/> 
+        <constant name="VTXIB_tube_rmin_correction" value="0.25*mm"/>
+        <constant name="VTXIB_tube_r" value="VTXIB_SEED_r5+VTXIB_tube_rmin_correction"/> 
+    </define>
 
     <!--  Definition of the readout segmentation/definition  -->
     <readouts>
@@ -197,15 +207,15 @@
 
             <type_flags type=" DetType_TRACKER + DetType_PIXEL + DetType_VERTEX + DetType_BARREL"/>
 
-            <stave name="VTXIBStave1SEED" r="VTXIB_SEED_r1" length="2.*VTXIB_SEED_half_length1">
-                <sensor name="sensor" thickness="VTXIB_SEED_sensitive_thickness" material="Silicon">
-                    <component sensitive="False" isCurved="true" name="Periphery_phi"       vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2." xmax="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery"  ymin="-VTXIB_SEED_sensor_z/2." ymax="+VTXIB_SEED_sensor_z/2."/>
-                    <component sensitive="True"  isCurved="true" name="Pixel array"     vis="VTXSensitiveVis" nsegments="VTXIB_curved_nsegments" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2."  ymin="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2."/>
-                    <component sensitive="False" isCurved="true" name="Periphery"       vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2."  ymin="-VTXIB_SEED_sensor_z/2." ymax="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2."/>
-                    <component sensitive="False" isCurved="true" name="Periphery"       vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2."  ymin="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2."/>
+            <stave name="VTXIB_SEED_Stave1" r="VTXIB_SEED_r1" length="2.*VTXIB_SEED_half_length1">
+                <sensor name="sensor" thickness="VTXIB_SEED_total_sensor_thickness" material="Silicon">
+                    <component sensitive="False" isCurved="true" name="Periphery_phi" vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2." xmax="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" ymin="-VTXIB_SEED_sensor_z/2." ymax="+VTXIB_SEED_sensor_z/2."/>
+                    <component sensitive="True"  isCurved="true" name="Pixel array"   vis="VTXSensitiveVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2." ymin="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2." sensor_insensitive_thickness_below="VTXIB_SEED_insensitive_thickness_below" thickness="VTXIB_SEED_sensitive_thickness" sensor_insensitive_thickness_above="VTXIB_SEED_insensitive_thickness_above" other_insensitive_thickness_below="VTXIB_SEED_Kapton_beampipe_thickness" other_insensitive_thickness_above="0." nsegments="VTXIB_curved_nsegments"/>
+                    <component sensitive="False" isCurved="true" name="Periphery_z1"  vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2." ymin="-VTXIB_SEED_sensor_z/2." ymax="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2."/>
+                    <component sensitive="False" isCurved="true" name="Periphery_z2"  vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2." ymin="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2."/>
                 </sensor>
                     <components name="Support_sensor_L1"
-                            r="-VTXIB_SEED_sensitive_thickness + support_tolerance_r"
+                            r="-VTXIB_SEED_total_sensor_thickness + support_tolerance_r"
                             length="VTXIB_SEED_half_length1">
 
                         <component  sensitive="False"
@@ -247,7 +257,7 @@
                                     phi_offset="phi_offset_addons_1"/>
                     </components>
                     <components name="Support_periphery_L1_longeron"
-                                r="VTXIB_SEED_sensitive_thickness *4. + FlexAl_thickness + FlexKapton_thickness + 2.0*VTXIB_curved_tolerance_r"
+                                r="VTXIB_SEED_total_sensor_thickness *4. + FlexAl_thickness + FlexKapton_thickness + 2.0*VTXIB_curved_tolerance_r"
                                 length="VTXIB_SEED_support_center1_len/2.">
 
                         <component  sensitive="False"
@@ -256,14 +266,14 @@
                                     name="SupportPeriphery_L1_longeron"
                                     vis="RandomVis"
                                     material="CarbonFoam"
-                                    thickness="VTXIB_SEED_r2 - VTXIB_SEED_r1 - VTXIB_SEED_sensitive_thickness*4. - 4.0*FlexAl_thickness - FlexKapton_thickness - Longeron_thickness - 4.0*VTXIB_curved_tolerance_r"
+                                    thickness="VTXIB_SEED_r2 - VTXIB_SEED_r1 - VTXIB_SEED_total_sensor_thickness*4. - 4.0*FlexAl_thickness - FlexKapton_thickness - Longeron_thickness - 4.0*VTXIB_curved_tolerance_r"
                                     width="VTXIB_SEED_sensor_phi_periphery"
                                     phi_offset="phi_offset_addons_1"/>
                     </components>
                     
 
                     <end_z  name="Support_periphery_L1_rings"
-                            r="VTXIB_SEED_sensitive_thickness *4. + FlexAl_thickness + FlexKapton_thickness + 2.0*VTXIB_curved_tolerance_r">
+                            r="VTXIB_SEED_total_sensor_thickness *4. + FlexAl_thickness + FlexKapton_thickness + 2.0*VTXIB_curved_tolerance_r">
 
                         <component  sensitive="False"
                                     isCurved="true"
@@ -271,7 +281,7 @@
                                     name="SupportPeriphery_L1_rings"
                                     vis="RandomVis"
                                     material="CarbonFoam"
-                                    thickness="VTXIB_SEED_r2 - VTXIB_SEED_r1 - VTXIB_SEED_sensitive_thickness*4. - 4.0*FlexAl_thickness - FlexKapton_thickness - Longeron_thickness - 4.0*VTXIB_curved_tolerance_r"
+                                    thickness="VTXIB_SEED_r2 - VTXIB_SEED_r1 - VTXIB_SEED_total_sensor_thickness*4. - 4.0*FlexAl_thickness - FlexKapton_thickness - Longeron_thickness - 4.0*VTXIB_curved_tolerance_r"
                                     width="VTXIB_SEED_sensor_phi_sensitive+0.2*mm"
                                     length="VTXIB_SEED_support_ring_len"
                                     phi_offset="phi_offset_addons_1"
@@ -280,12 +290,12 @@
 
             </stave>
 
-            <stave name="VTXIBStave2SEED" r="VTXIB_SEED_r2" length="2.*VTXIB_SEED_half_length2">
-                <sensor name="sensor" thickness="VTXIB_SEED_sensitive_thickness" material="Silicon">
-                    <component sensitive="False" isCurved="true" name="Periphery_phi"       vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2." xmax="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery"  ymin="-VTXIB_SEED_sensor_z/2." ymax="+VTXIB_SEED_sensor_z/2."/>
-                    <component sensitive="True"  isCurved="true" name="Pixel array"     vis="VTXSensitiveVis" nsegments="VTXIB_curved_nsegments" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2."  ymin="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2."/>
-                    <component sensitive="False" isCurved="true" name="Periphery"       vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2."  ymin="-VTXIB_SEED_sensor_z/2." ymax="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2."/>
-                    <component sensitive="False" isCurved="true" name="Periphery"       vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2."  ymin="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2."/>
+            <stave name="VTXIB_SEED_Stave2" r="VTXIB_SEED_r2" length="2.*VTXIB_SEED_half_length2">
+                <sensor name="sensor" thickness="VTXIB_SEED_total_sensor_thickness" material="Silicon">
+                    <component sensitive="False" isCurved="true" name="Periphery_phi" vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2." xmax="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" ymin="-VTXIB_SEED_sensor_z/2." ymax="+VTXIB_SEED_sensor_z/2."/>
+                    <component sensitive="True"  isCurved="true" name="Pixel array"   vis="VTXSensitiveVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2." ymin="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2." sensor_insensitive_thickness_below="VTXIB_SEED_insensitive_thickness_below" thickness="VTXIB_SEED_sensitive_thickness" sensor_insensitive_thickness_above="VTXIB_SEED_insensitive_thickness_above" other_insensitive_thickness_below="0." other_insensitive_thickness_above="0." nsegments="VTXIB_curved_nsegments"/>
+                    <component sensitive="False" isCurved="true" name="Periphery_z1"  vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2." ymin="-VTXIB_SEED_sensor_z/2." ymax="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2."/>
+                    <component sensitive="False" isCurved="true" name="Periphery_z2"  vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2." ymin="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2."/>
                 </sensor>
 
 
@@ -317,7 +327,7 @@
                                     phi_offset="phi_offset_addons_2"/>
                     </components>
                     <components name="Support_sensor_L2"
-                            r="-VTXIB_SEED_sensitive_thickness+ 3.0*support_tolerance_r"
+                            r="-VTXIB_SEED_total_sensor_thickness+ 3.0*support_tolerance_r"
                             length="VTXIB_SEED_half_length2">
 
                         <component  sensitive="False"
@@ -325,13 +335,13 @@
                                     name="SupportSensor_L2"
                                     vis="RandomVis"
                                     material="CarbonFoam"
-                                    thickness="Longeron_thickness_sensor -2.0*VTXIB_SEED_sensitive_thickness"
+                                    thickness="Longeron_thickness_sensor -2.0*VTXIB_SEED_total_sensor_thickness"
                                     width="VTXIB_seg_phi_width"
                                     phi_offset="phi_offset_addons_2"/>
                     </components>
      
                     <components name="Support_periphery_L2_longeron"
-                                r="VTXIB_SEED_sensitive_thickness *4. + FlexAl_thickness + FlexKapton_thickness + VTXIB_curved_tolerance_r"
+                                r="VTXIB_SEED_total_sensor_thickness *4. + FlexAl_thickness + FlexKapton_thickness + VTXIB_curved_tolerance_r"
                                 length="VTXIB_SEED_support_center2_len/2.">
 
                         <component  sensitive="False"
@@ -340,13 +350,13 @@
                                     name="SupportPeriphery_L2_longeron"
                                     vis="RandomVis"
                                     material="CarbonFoam"
-                                    thickness="VTXIB_SEED_r3 - VTXIB_SEED_r2 - VTXIB_SEED_sensitive_thickness*4. - 4.0*FlexAl_thickness - FlexKapton_thickness - Longeron_thickness - 4.0*VTXIB_curved_tolerance_r"
+                                    thickness="VTXIB_SEED_r3 - VTXIB_SEED_r2 - VTXIB_SEED_total_sensor_thickness*4. - 4.0*FlexAl_thickness - FlexKapton_thickness - Longeron_thickness - 4.0*VTXIB_curved_tolerance_r"
                                     width="VTXIB_SEED_sensor_phi_periphery"
                                     phi_offset="phi_offset_addons_2"/>
                     </components>
 
                     <end_z  name="Support_periphery_L2_rings"
-                            r="VTXIB_SEED_sensitive_thickness *4. + FlexAl_thickness + FlexKapton_thickness + VTXIB_curved_tolerance_r">
+                            r="VTXIB_SEED_total_sensor_thickness *4. + FlexAl_thickness + FlexKapton_thickness + VTXIB_curved_tolerance_r">
 
                         <component  sensitive="False"
                                     isCurved="true"
@@ -354,7 +364,7 @@
                                     name="SupportPeriphery_L2_rings"
                                     vis="RandomVis"
                                     material="CarbonFoam"
-                                    thickness="VTXIB_SEED_r3 - VTXIB_SEED_r2 - VTXIB_SEED_sensitive_thickness*4. - 4.0*FlexAl_thickness - FlexKapton_thickness - Longeron_thickness - 4.0*VTXIB_curved_tolerance_r"
+                                    thickness="VTXIB_SEED_r3 - VTXIB_SEED_r2 - VTXIB_SEED_total_sensor_thickness*4. - 4.0*FlexAl_thickness - FlexKapton_thickness - Longeron_thickness - 4.0*VTXIB_curved_tolerance_r"
                                     width="VTXIB_SEED_sensor_phi_sensitive"
                                     length="VTXIB_SEED_support_ring_len"
                                     phi_offset="phi_offset_addons_2"
@@ -365,18 +375,18 @@
 
             </stave>
 
-            <stave name="VTXIBStave3SEED" r="VTXIB_SEED_r3" length="2.*VTXIB_SEED_half_length3">
+            <stave name="VTXIB_SEED_Stave3" r="VTXIB_SEED_r3" length="2.*VTXIB_SEED_half_length3">
             
-                <sensor name="sensor" thickness="VTXIB_SEED_sensitive_thickness" material="Silicon">
-                    <component sensitive="False" isCurved="true" name="Periphery"       vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2."    xmax="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery"  ymin="-VTXIB_SEED_sensor_z/2." ymax="+VTXIB_SEED_sensor_z/2."/>
-                    <component sensitive="True"  isCurved="true" name="Pixel array"     vis="VTXSensitiveVis" nsegments="VTXIB_curved_nsegments" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2."  ymin="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2."/>
-                    <component sensitive="False" isCurved="true" name="Periphery"       vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2."  ymin="-VTXIB_SEED_sensor_z/2." ymax="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2."/>
-                    <component sensitive="False" isCurved="true" name="Periphery"       vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2."  ymin="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2."/>
+                <sensor name="sensor" thickness="VTXIB_SEED_total_sensor_thickness" material="Silicon">
+                    <component sensitive="False" isCurved="true" name="Periphery_phi" vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2." xmax="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" ymin="-VTXIB_SEED_sensor_z/2." ymax="+VTXIB_SEED_sensor_z/2."/>
+                    <component sensitive="True"  isCurved="true" name="Pixel array"   vis="VTXSensitiveVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2." ymin="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2." sensor_insensitive_thickness_below="VTXIB_SEED_insensitive_thickness_below" thickness="VTXIB_SEED_sensitive_thickness" sensor_insensitive_thickness_above="VTXIB_SEED_insensitive_thickness_above" other_insensitive_thickness_below="0." other_insensitive_thickness_above="0." nsegments="VTXIB_curved_nsegments"/>
+                    <component sensitive="False" isCurved="true" name="Periphery_z1"  vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2." ymin="-VTXIB_SEED_sensor_z/2." ymax="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2."/>
+                    <component sensitive="False" isCurved="true" name="Periphery_z2"  vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2." ymin="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2."/>
                 </sensor>
 
                 <!-- Al + Kapton flex and support on top of the Periphery (Layer 3) -->
                 <components name="flex_Al_L3"
-                            r="VTXIB_SEED_sensitive_thickness *3."
+                            r="VTXIB_SEED_total_sensor_thickness *3."
                             length="VTXIB_SEED_nModules3*VTXIB_SEED_sensor_z/2.">
                 
                     <component  sensitive="False"
@@ -391,7 +401,7 @@
                 </components>
                 
                 <components name="flex_Kapton_L3"
-                            r="VTXIB_SEED_sensitive_thickness *3. + FlexAl_thickness "
+                            r="VTXIB_SEED_total_sensor_thickness *3. + FlexAl_thickness "
                             length="VTXIB_SEED_nModules3*VTXIB_SEED_sensor_z/2.">
                 
                     <component  sensitive="False"
@@ -424,7 +434,7 @@
                                 <!-- width="VTXIB_SEED_sensor_phi_periphery-phi_gap" -->
                 
                 <components name="Support_periphery_L3_longeron"
-                            r="VTXIB_SEED_sensitive_thickness *4. + FlexAl_thickness + FlexKapton_thickness + VTXIB_curved_tolerance_r"
+                            r="VTXIB_SEED_total_sensor_thickness *4. + FlexAl_thickness + FlexKapton_thickness + VTXIB_curved_tolerance_r"
                             length="VTXIB_SEED_support_center3_len/2.">
 
                     <component  sensitive="False"
@@ -433,13 +443,13 @@
                                 name="SupportPeriphery_L3_longeron"
                                 vis="RandomVis"
                                 material="CarbonFoam"
-                                thickness="VTXIB_SEED_r4 - VTXIB_SEED_r3 - VTXIB_SEED_sensitive_thickness*4. - 4.0*FlexAl_thickness - FlexKapton_thickness - Longeron_thickness - 4.0*VTXIB_curved_tolerance_r"
+                                thickness="VTXIB_SEED_r4 - VTXIB_SEED_r3 - VTXIB_SEED_total_sensor_thickness*4. - 4.0*FlexAl_thickness - FlexKapton_thickness - Longeron_thickness - 4.0*VTXIB_curved_tolerance_r"
                                 width="VTXIB_SEED_sensor_phi_periphery"
-                                phi_offset="(-VTXIB_SEED_sensor_phi/2. + VTXIB_SEED_sensor_phi_periphery/2. - 0.2*mm)/(VTXIB_SEED_r3 + VTXIB_SEED_sensitive_thickness + FlexAl_thickness + FlexKapton_thickness + Longeron_thickness + VTXIB_curved_tolerance_r) * rad"/>
+                                phi_offset="(-VTXIB_SEED_sensor_phi/2. + VTXIB_SEED_sensor_phi_periphery/2. - 0.2*mm)/(VTXIB_SEED_r3 + VTXIB_SEED_total_sensor_thickness + FlexAl_thickness + FlexKapton_thickness + Longeron_thickness + VTXIB_curved_tolerance_r) * rad"/>
                 </components>
 
                 <end_z  name="Support_periphery_L3_rings"
-                        r="VTXIB_SEED_sensitive_thickness *4. + FlexAl_thickness + FlexKapton_thickness + VTXIB_curved_tolerance_r">
+                        r="VTXIB_SEED_total_sensor_thickness *4. + FlexAl_thickness + FlexKapton_thickness + VTXIB_curved_tolerance_r">
 
                     <component  sensitive="False"
                                 isCurved="true"
@@ -447,10 +457,10 @@
                                 name="SupportPeriphery_L3_rings"
                                 vis="RandomVis"
                                 material="CarbonFoam"
-                                thickness="VTXIB_SEED_r4 - VTXIB_SEED_r3 - VTXIB_SEED_sensitive_thickness*4. - 4.0*FlexAl_thickness - FlexKapton_thickness - Longeron_thickness - 4.0*VTXIB_curved_tolerance_r"
+                                thickness="VTXIB_SEED_r4 - VTXIB_SEED_r3 - VTXIB_SEED_total_sensor_thickness*4. - 4.0*FlexAl_thickness - FlexKapton_thickness - Longeron_thickness - 4.0*VTXIB_curved_tolerance_r"
                                 width="VTXIB_SEED_sensor_phi_sensitive"
                                 length="VTXIB_SEED_support_ring_len"
-                                phi_offset="(-VTXIB_SEED_sensor_phi/2. + VTXIB_SEED_sensor_phi_periphery/2. - 0.2*mm)/(VTXIB_SEED_r3 + VTXIB_SEED_sensitive_thickness + FlexAl_thickness + FlexKapton_thickness + Longeron_thickness + VTXIB_curved_tolerance_r) * rad"
+                                phi_offset="(-VTXIB_SEED_sensor_phi/2. + VTXIB_SEED_sensor_phi_periphery/2. - 0.2*mm)/(VTXIB_SEED_r3 + VTXIB_SEED_total_sensor_thickness + FlexAl_thickness + FlexKapton_thickness + Longeron_thickness + VTXIB_curved_tolerance_r) * rad"
                                 dz="VTXIB_SEED_support_ring_dz"/>
                 </end_z>
 
@@ -459,17 +469,17 @@
 
             </stave>
 
-            <stave name="VTXIBStave4SEED" r="VTXIB_SEED_r4" length="2.*VTXIB_SEED_half_length4">
-                <sensor name="sensor" thickness="VTXIB_SEED_sensitive_thickness" material="Silicon">
-                    <component sensitive="False" isCurved="true" name="Periphery_phi"       vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2." xmax="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery"  ymin="-VTXIB_SEED_sensor_z/2." ymax="+VTXIB_SEED_sensor_z/2."/>
-                    <component sensitive="True"  isCurved="true" name="Pixel array"     vis="VTXSensitiveVis" nsegments="VTXIB_curved_nsegments" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2."  ymin="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2."/>
-                    <component sensitive="False" isCurved="true" name="Periphery"       vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2."  ymin="-VTXIB_SEED_sensor_z/2." ymax="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2."/>
-                    <component sensitive="False" isCurved="true" name="Periphery"       vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2."  ymin="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2."/>
+            <stave name="VTXIB_SEED_Stave4" r="VTXIB_SEED_r4" length="2.*VTXIB_SEED_half_length4">
+                <sensor name="sensor" thickness="VTXIB_SEED_total_sensor_thickness" material="Silicon">
+                    <component sensitive="False" isCurved="true" name="Periphery_phi" vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2." xmax="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" ymin="-VTXIB_SEED_sensor_z/2." ymax="+VTXIB_SEED_sensor_z/2."/>
+                    <component sensitive="True"  isCurved="true" name="Pixel array"   vis="VTXSensitiveVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2." ymin="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2." sensor_insensitive_thickness_below="VTXIB_SEED_insensitive_thickness_below" thickness="VTXIB_SEED_sensitive_thickness" sensor_insensitive_thickness_above="VTXIB_SEED_insensitive_thickness_above" other_insensitive_thickness_below="0." other_insensitive_thickness_above="0." nsegments="VTXIB_curved_nsegments"/>
+                    <component sensitive="False" isCurved="true" name="Periphery_z1"  vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2." ymin="-VTXIB_SEED_sensor_z/2." ymax="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2."/>
+                    <component sensitive="False" isCurved="true" name="Periphery_z2"  vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2." ymin="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2."/>
                 </sensor>
                 
                 <!-- Al + Kapton flex and support on top of the Periphery (Layer 4) -->
                 <components name="flex_Al_L4"
-                            r="VTXIB_SEED_sensitive_thickness *3."
+                            r="VTXIB_SEED_total_sensor_thickness *3."
                             length="VTXIB_SEED_nModules4*VTXIB_SEED_sensor_z/2.">
                 
                     <component  sensitive="False"
@@ -484,7 +494,7 @@
                 </components>
                 
                 <components name="flex_Kapton_L4"
-                            r="VTXIB_SEED_sensitive_thickness *3. + FlexAl_thickness "
+                            r="VTXIB_SEED_total_sensor_thickness *3. + FlexAl_thickness "
                             length="VTXIB_SEED_nModules4*VTXIB_SEED_sensor_z/2.">
                 
                     <component  sensitive="False"
@@ -519,7 +529,7 @@
                                 <!-- thickness="Longeron_thickness*0.5" -->
 
                 <components name="Support_periphery_L4_longeron"
-                            r="VTXIB_SEED_sensitive_thickness *4. + FlexAl_thickness + FlexKapton_thickness + VTXIB_curved_tolerance_r"
+                            r="VTXIB_SEED_total_sensor_thickness *4. + FlexAl_thickness + FlexKapton_thickness + VTXIB_curved_tolerance_r"
                             length="VTXIB_SEED_support_center4_len/2.">
 
                     <component  sensitive="False"
@@ -528,13 +538,13 @@
                                 name="SupportPeriphery_L4_longeron"
                                 vis="RandomVis"
                                 material="CarbonFoam"
-                                thickness="VTXIB_SEED_r5 - VTXIB_SEED_r4 - VTXIB_SEED_sensitive_thickness*4. - 4.0*FlexAl_thickness - FlexKapton_thickness - Longeron_thickness - 4.0*VTXIB_curved_tolerance_r"
+                                thickness="VTXIB_SEED_r5 - VTXIB_SEED_r4 - VTXIB_SEED_total_sensor_thickness*4. - 4.0*FlexAl_thickness - FlexKapton_thickness - Longeron_thickness - 4.0*VTXIB_curved_tolerance_r"
                                 width="VTXIB_SEED_sensor_phi_periphery"
                                 phi_offset="phi_offset_addons_4"/>
                 </components>
 
                 <end_z  name="Support_periphery_L4_rings"
-                        r="VTXIB_SEED_sensitive_thickness *4. + FlexAl_thickness + FlexKapton_thickness + VTXIB_curved_tolerance_r">
+                        r="VTXIB_SEED_total_sensor_thickness *4. + FlexAl_thickness + FlexKapton_thickness + VTXIB_curved_tolerance_r">
 
                     <component  sensitive="False"
                                 isCurved="true"
@@ -542,7 +552,7 @@
                                 name="SupportPeriphery_L4_rings"
                                 vis="RandomVis"
                                 material="CarbonFoam"
-                                thickness="VTXIB_SEED_r5 - VTXIB_SEED_r4 - VTXIB_SEED_sensitive_thickness*4. - 4.0*FlexAl_thickness - FlexKapton_thickness - Longeron_thickness - 4.0*VTXIB_curved_tolerance_r"
+                                thickness="VTXIB_SEED_r5 - VTXIB_SEED_r4 - VTXIB_SEED_total_sensor_thickness*4. - 4.0*FlexAl_thickness - FlexKapton_thickness - Longeron_thickness - 4.0*VTXIB_curved_tolerance_r"
                                 width="VTXIB_SEED_sensor_phi_sensitive"
                                 length="VTXIB_SEED_support_ring_len"
                                 phi_offset="phi_offset_addons_4"
@@ -553,12 +563,12 @@
 
             </stave>
 
-            <stave name="VTXIBStave5SEED" r="VTXIB_SEED_r5" length="2.*VTXIB_SEED_half_length5">
-                <sensor name="sensor" thickness="VTXIB_SEED_sensitive_thickness" material="Silicon">
-                    <component sensitive="False" isCurved="true" name="Periphery_phi"       vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2." xmax="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery"  ymin="-VTXIB_SEED_sensor_z/2." ymax="+VTXIB_SEED_sensor_z/2."/>
-                    <component sensitive="True"  isCurved="true" name="Pixel array"     vis="VTXSensitiveVis" nsegments="VTXIB_curved_nsegments" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2."  ymin="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2."/>
-                    <component sensitive="False" isCurved="true" name="Periphery"       vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2."  ymin="-VTXIB_SEED_sensor_z/2." ymax="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2."/>
-                    <component sensitive="False" isCurved="true" name="Periphery"       vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2."  ymin="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2."/>
+            <stave name="VTXIB_SEED_Stave5" r="VTXIB_SEED_r5" length="2.*VTXIB_SEED_half_length5">
+                <sensor name="sensor" thickness="VTXIB_SEED_total_sensor_thickness" material="Silicon">
+                    <component sensitive="False" isCurved="true" name="Periphery_phi" vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2." xmax="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" ymin="-VTXIB_SEED_sensor_z/2." ymax="+VTXIB_SEED_sensor_z/2."/>
+                    <component sensitive="True"  isCurved="true" name="Pixel array"   vis="VTXSensitiveVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2." ymin="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2." sensor_insensitive_thickness_below="VTXIB_SEED_insensitive_thickness_below" thickness="VTXIB_SEED_sensitive_thickness" sensor_insensitive_thickness_above="VTXIB_SEED_insensitive_thickness_above" other_insensitive_thickness_below="0." other_insensitive_thickness_above="VTXIB_tube_rmin_correction+VTXIB_tube_thickness" nsegments="VTXIB_curved_nsegments"/>
+                    <component sensitive="False" isCurved="true" name="Periphery_z1"  vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2." ymin="-VTXIB_SEED_sensor_z/2." ymax="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2."/>
+                    <component sensitive="False" isCurved="true" name="Periphery_z2"  vis="VTXPeripheryVis" xmin="-VTXIB_SEED_sensor_phi/2.+VTXIB_SEED_sensor_phi_periphery" xmax="VTXIB_SEED_sensor_phi/2." ymin="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2."/>
                 </sensor>
 
                 <!-- <components name="Support_sensor_L5"
@@ -576,39 +586,25 @@
                                 phi_offset="phi_offset_addons_5-0.005*rad"/>
                 
                 </components> -->
-
-                    <!-- 100 um carbon layer -->
-                    <components name="carbon_after_L5" 
-                            r="0.250*mm"
-                            length="VTXIB_SEED_nModules5*VTXIB_SEED_sensor_z/2.">
-                        <component
-                            thickness="0.10*mm"
-                            width="2.0*pi*(VTXIB_SEED_r5 + 0.250*mm) / VTXIB_SEED_staves5"
-                            isCurved="true"
-                            nsegments="VTXIB_curved_nsegments"
-                            material="CarbonFiber"
-                            vis="CarbonVis"/>
-                    </components>
-
             </stave>
 
-            <!-- <layer nLadders="VTXIB_SEED_staves1" phi0="0." r="VTXIB_SEED_r1" id="0" nmodules="VTXIB_SEED_nModules1" name="VTXIBStave1SEED" step="0.0*mm" motherVolThickness="VTXIB_SEED_r2-VTXIB_SEED_r1"        motherVolLength="VTXIB_SEED_nModules1*VTXIB_SEED_sensor_z" offset="-0.2*mm"/> -->
-            <!-- <layer nLadders="VTXIB_SEED_staves2" phi0="0." r="VTXIB_SEED_r2" id="1" nmodules="VTXIB_SEED_nModules2" name="VTXIBStave2SEED" step="0.0*mm" motherVolThickness="VTXIB_SEED_r3-VTXIB_SEED_r2"        motherVolLength="VTXIB_SEED_nModules2*VTXIB_SEED_sensor_z" offset="-0.2*mm"/> -->
-            <!-- <layer nLadders="VTXIB_SEED_staves3" phi0="0." r="VTXIB_SEED_r3" id="2" nmodules="VTXIB_SEED_nModules3" name="VTXIBStave3SEED" step="0.0*mm" motherVolThickness="VTXIB_SEED_r4-VTXIB_SEED_r3"        motherVolLength="VTXIB_SEED_nModules3*VTXIB_SEED_sensor_z" offset="-0.2*mm"/> -->
-            <!-- <layer nLadders="VTXIB_SEED_staves4" phi0="0." r="VTXIB_SEED_r4" id="3" nmodules="VTXIB_SEED_nModules4" name="VTXIBStave4SEED" step="0.0*mm" motherVolThickness="VTXIB_SEED_r5-VTXIB_SEED_r4"        motherVolLength="VTXIB_SEED_nModules4*VTXIB_SEED_sensor_z" offset="-0.2*mm"/> -->
-            <!-- <layer nLadders="VTXIB_SEED_staves5" phi0="0." r="VTXIB_SEED_r5" id="4" nmodules="VTXIB_SEED_nModules5" name="VTXIBStave5SEED" step="0.0*mm" motherVolThickness="VTX_r_max-VTXIB_SEED_r5"    motherVolLength="VTXIB_SEED_nModules5*VTXIB_SEED_sensor_z" offset="-0.2*mm"/> -->
+            <!-- <layer nLadders="VTXIB_SEED_staves1" phi0="0." r="VTXIB_SEED_r1" id="0" nmodules="VTXIB_SEED_nModules1" name="VTXIB_SEED_Stave1" step="0.0*mm" motherVolThickness="VTXIB_SEED_r2-VTXIB_SEED_r1"        motherVolLength="VTXIB_SEED_nModules1*VTXIB_SEED_sensor_z" offset="-0.2*mm"/> -->
+            <!-- <layer nLadders="VTXIB_SEED_staves2" phi0="0." r="VTXIB_SEED_r2" id="1" nmodules="VTXIB_SEED_nModules2" name="VTXIB_SEED_Stave2" step="0.0*mm" motherVolThickness="VTXIB_SEED_r3-VTXIB_SEED_r2"        motherVolLength="VTXIB_SEED_nModules2*VTXIB_SEED_sensor_z" offset="-0.2*mm"/> -->
+            <!-- <layer nLadders="VTXIB_SEED_staves3" phi0="0." r="VTXIB_SEED_r3" id="2" nmodules="VTXIB_SEED_nModules3" name="VTXIB_SEED_Stave3" step="0.0*mm" motherVolThickness="VTXIB_SEED_r4-VTXIB_SEED_r3"        motherVolLength="VTXIB_SEED_nModules3*VTXIB_SEED_sensor_z" offset="-0.2*mm"/> -->
+            <!-- <layer nLadders="VTXIB_SEED_staves4" phi0="0." r="VTXIB_SEED_r4" id="3" nmodules="VTXIB_SEED_nModules4" name="VTXIB_SEED_Stave4" step="0.0*mm" motherVolThickness="VTXIB_SEED_r5-VTXIB_SEED_r4"        motherVolLength="VTXIB_SEED_nModules4*VTXIB_SEED_sensor_z" offset="-0.2*mm"/> -->
+            <!-- <layer nLadders="VTXIB_SEED_staves5" phi0="0." r="VTXIB_SEED_r5" id="4" nmodules="VTXIB_SEED_nModules5" name="VTXIB_SEED_Stave5" step="0.0*mm" motherVolThickness="VTX_r_max-VTXIB_SEED_r5"    motherVolLength="VTXIB_SEED_nModules5*VTXIB_SEED_sensor_z" offset="-0.2*mm"/> -->
 
-            <layer nLadders="VTXIB_SEED_staves1" phi0="0." r="VTXIB_SEED_r1" id="0" nmodules="VTXIB_SEED_nModules1" name="VTXIBStave1SEED" step="0.0*mm" motherVolRmin="VTXIB_SEED_r1-VTXIB_SEED_rmin_correction-VTXIB_SEED_Kapton_beampipe_thickness" motherVolThickness="VTXIB_SEED_r2-VTXIB_SEED_r1+VTXIB_SEED_Kapton_beampipe_thickness"        motherVolLength="VTXIB_SEED_nModules1*VTXIB_SEED_sensor_z+VTXIB_SEED_support_ring_len" z_offset="VTXIB_SEED_zoffset1" offset="-0.2*mm"/>
-            <layer nLadders="VTXIB_SEED_staves2" phi0="0." r="VTXIB_SEED_r2" id="1" nmodules="VTXIB_SEED_nModules2" name="VTXIBStave2SEED" step="0.0*mm" motherVolRmin="VTXIB_SEED_r2-VTXIB_SEED_rmin_correction" motherVolThickness="VTXIB_SEED_r3-VTXIB_SEED_r2"                                            motherVolLength="VTXIB_SEED_nModules2*VTXIB_SEED_sensor_z+VTXIB_SEED_support_ring_len" z_offset="VTXIB_SEED_zoffset2" offset="-0.2*mm"/>
-            <layer nLadders="VTXIB_SEED_staves3" phi0="0." r="VTXIB_SEED_r3" id="2" nmodules="VTXIB_SEED_nModules3" name="VTXIBStave3SEED" step="0.0*mm" motherVolRmin="VTXIB_SEED_r3-VTXIB_SEED_rmin_correction" motherVolThickness="VTXIB_SEED_r4-VTXIB_SEED_r3"                                            motherVolLength="VTXIB_SEED_nModules3*VTXIB_SEED_sensor_z+VTXIB_SEED_support_ring_len" z_offset="VTXIB_SEED_zoffset3" offset="-0.2*mm"/>
-            <layer nLadders="VTXIB_SEED_staves4" phi0="0." r="VTXIB_SEED_r4" id="3" nmodules="VTXIB_SEED_nModules4" name="VTXIBStave4SEED" step="0.0*mm" motherVolRmin="VTXIB_SEED_r4-VTXIB_SEED_rmin_correction" motherVolThickness="VTXIB_SEED_r5-VTXIB_SEED_r4"                                            motherVolLength="VTXIB_SEED_nModules4*VTXIB_SEED_sensor_z+VTXIB_SEED_support_ring_len" z_offset="VTXIB_SEED_zoffset4" offset="-0.2*mm"/>
-            <layer nLadders="VTXIB_SEED_staves5" phi0="0." r="VTXIB_SEED_r5" id="4" nmodules="VTXIB_SEED_nModules5" name="VTXIBStave5SEED" step="0.0*mm" motherVolRmin="VTXIB_SEED_r5-VTXIB_SEED_rmin_correction" motherVolThickness="VTX_r_max-VTXIB_SEED_r5"                                      motherVolLength="VTXIB_SEED_nModules5*VTXIB_SEED_sensor_z+VTXIB_SEED_support_ring_len" z_offset="VTXIB_SEED_zoffset5" offset="-0.2*mm"/>
+            <layer nLadders="VTXIB_SEED_staves1" phi0="0." r="VTXIB_SEED_r1" id="0" nmodules="VTXIB_SEED_nModules1" name="VTXIB_SEED_Stave1" step="0.0*mm" motherVolRmin="VTXIB_SEED_r1-VTXIB_SEED_rmin_correction-VTXIB_SEED_Kapton_beampipe_thickness" motherVolThickness="VTXIB_SEED_r2-VTXIB_SEED_r1+VTXIB_SEED_Kapton_beampipe_thickness"        motherVolLength="VTXIB_SEED_nModules1*VTXIB_SEED_sensor_z+VTXIB_SEED_support_ring_len" z_offset="VTXIB_SEED_zoffset1" offset="-0.2*mm"/>
+            <layer nLadders="VTXIB_SEED_staves2" phi0="0." r="VTXIB_SEED_r2" id="1" nmodules="VTXIB_SEED_nModules2" name="VTXIB_SEED_Stave2" step="0.0*mm" motherVolRmin="VTXIB_SEED_r2-VTXIB_SEED_rmin_correction" motherVolThickness="VTXIB_SEED_r3-VTXIB_SEED_r2"                                            motherVolLength="VTXIB_SEED_nModules2*VTXIB_SEED_sensor_z+VTXIB_SEED_support_ring_len" z_offset="VTXIB_SEED_zoffset2" offset="-0.2*mm"/>
+            <layer nLadders="VTXIB_SEED_staves3" phi0="0." r="VTXIB_SEED_r3" id="2" nmodules="VTXIB_SEED_nModules3" name="VTXIB_SEED_Stave3" step="0.0*mm" motherVolRmin="VTXIB_SEED_r3-VTXIB_SEED_rmin_correction" motherVolThickness="VTXIB_SEED_r4-VTXIB_SEED_r3"                                            motherVolLength="VTXIB_SEED_nModules3*VTXIB_SEED_sensor_z+VTXIB_SEED_support_ring_len" z_offset="VTXIB_SEED_zoffset3" offset="-0.2*mm"/>
+            <layer nLadders="VTXIB_SEED_staves4" phi0="0." r="VTXIB_SEED_r4" id="3" nmodules="VTXIB_SEED_nModules4" name="VTXIB_SEED_Stave4" step="0.0*mm" motherVolRmin="VTXIB_SEED_r4-VTXIB_SEED_rmin_correction" motherVolThickness="VTXIB_SEED_r5-VTXIB_SEED_r4"                                            motherVolLength="VTXIB_SEED_nModules4*VTXIB_SEED_sensor_z+VTXIB_SEED_support_ring_len" z_offset="VTXIB_SEED_zoffset4" offset="-0.2*mm"/>
+            <layer nLadders="VTXIB_SEED_staves5" phi0="0." r="VTXIB_SEED_r5" id="4" nmodules="VTXIB_SEED_nModules5" name="VTXIB_SEED_Stave5" step="0.0*mm" motherVolRmin="VTXIB_SEED_r5-VTXIB_SEED_rmin_correction" motherVolThickness="VTX_r_max-VTXIB_SEED_r5"                                      motherVolLength="VTXIB_SEED_nModules5*VTXIB_SEED_sensor_z+VTXIB_SEED_support_ring_len" z_offset="VTXIB_SEED_zoffset5" offset="-0.2*mm"/>
 
         </detector>
 
 
         <comment> Kapton layer on top of beam pipe before first layer </comment>
-        <detector name="Kapton_on_beampipe" type="VertexBarrel_detailed_o1_v03" vis="VXDVis" id="-2" readout="VertexDummyCollection"  region="VTXBRegion">
+        <detector name="Kapton_on_beampipe" type="VertexBarrel_detailed_o1_v03" vis="KaptonVis" id="-2" readout="VertexDummyCollection" region="VTXBRegion">
             <envelope vis="KaptonVis">
                 <shape type="Assembly"/>
             </envelope>
@@ -622,6 +618,20 @@
             <layer nLadders="1" r="VTXIB_SEED_Kapton_beampipe_r" id="0" name="Kapton_on_beampipe_stave" nmodules="1" motherVolThickness="VTXIB_SEED_Kapton_beampipe_thickness"/>
         </detector>
 
+        <comment> Inner vertex tube just outside last inner vertex layer </comment>
+        <detector name="VertexInnerBarrel_tube" type="VertexBarrel_detailed_o1_v03" vis="VTXIBTubeVis" id="-3" readout="VertexDummyCollection" region="VTXBRegion">
+            <envelope vis="VTXIBTubeVis">
+                <shape type="Assembly"/>
+            </envelope>
+
+            <stave name="VertexInnerBarrel_tube_stave" r="VTXIB_tube_r" length="2.*VTXIB_SEED_half_length5">  <comment> Choose the correct radius for curved/normal vertex by checking nInnerVertexLayers </comment>
+                <components name="inner_vertex_tube" length="VTXIB_SEED_half_length5">
+                    <component thickness="VTXIB_tube_thickness" width="2.*pi*VTXIB_tube_r" material="CarbonFiberVtx" isCurved="true" vis="VTXIBTubeVis"/>
+                </components>
+            </stave>
+
+            <layer nLadders="1" r="VTXIB_tube_r" id="0" name="VertexInnerBarrel_tube_stave" nmodules="1" motherVolThickness="VTXIB_tube_thickness"/>
+        </detector>
 
 
 
