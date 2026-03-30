@@ -87,6 +87,7 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
     double offset;
     double length;
     double z_offset;
+    vector<string> names;
     vector<double> thicknesses;
     vector<double> offsets;
     vector<double> z_offsets;
@@ -102,6 +103,7 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
     double r;
     double offset;
     double z_offset;
+    vector<string> names;
     vector<double> thicknesses;
     vector<double> lengths;
     vector<double> dzs;
@@ -192,6 +194,7 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
         components.rs.push_back(component.r(0));
         components.phis.push_back(
             component.phi(0)); // Rotation of component around its own axis, not applicable for curved components
+        components.names.push_back(component.nameStr("vol"));
 
         bool isCurved = getAttrOrDefault(component, _Unicode(isCurved), bool(false));
         components.isCurved.push_back(isCurved);
@@ -203,11 +206,11 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
           double phi_offset = getAttrOrDefault(component, _Unicode(phi_offset), double(0.0));
           Tube ele_box =
               Tube(rmin, rmin + thickness, components.length, -half_width + phi_offset, half_width + phi_offset);
-          ele_vol = Volume(components.name + _toString(iComponent, "_%d"), ele_box,
+          ele_vol = Volume(components.names.back() + _toString(iComponent, "_%d"), ele_box,
                            theDetector.material(component.materialStr()));
         } else {
           Box ele_box = Box(thickness / 2., component.width() / 2., components.length);
-          ele_vol = Volume(components.name + _toString(iComponent, "_%d"), ele_box,
+          ele_vol = Volume(components.names.back() + _toString(iComponent, "_%d"), ele_box,
                            theDetector.material(component.materialStr()));
         }
         ele_vol.setAttributes(theDetector, x_det.regionStr(), x_det.limitsStr(), component.visStr());
@@ -240,6 +243,7 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
         endOfStave.z_offsets.push_back(component.z_offset(0));
         endOfStave.lengths.push_back(component.length());
         endOfStave.rs.push_back(component.r(0));
+        endOfStave.names.push_back(component.nameStr("vol"));
 
         int side = getAttrOrDefault(component, _Unicode(side), int(0));
 
@@ -254,11 +258,11 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
           double phi_offset = getAttrOrDefault(component, _Unicode(phi_offset), double(0.0));
           Tube ele_box =
               Tube(rmin, rmin + thickness, component.length() / 2., -half_width + phi_offset, half_width + phi_offset);
-          ele_vol = Volume(endOfStave.name + _toString(iEndOfStave, "_%d"), ele_box,
+          ele_vol = Volume(endOfStave.names.back() + _toString(iEndOfStave, "_%d"), ele_box,
                            theDetector.material(component.materialStr()));
         } else {
           Box ele_box = Box(thickness / 2., component.width() / 2., component.length() / 2.);
-          ele_vol = Volume(endOfStave.name + _toString(iEndOfStave, "_%d"), ele_box,
+          ele_vol = Volume(endOfStave.names.back() + _toString(iEndOfStave, "_%d"), ele_box,
                            theDetector.material(component.materialStr()));
         }
         ele_vol.setAttributes(theDetector, x_det.regionStr(), x_det.limitsStr(), component.visStr());
@@ -509,7 +513,7 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
 
       // Place components
       for (auto& component : m.components_vec) {
-        Assembly component_assembly(stave_name + "_" + component.name);
+        Assembly component_assembly(component.name);
         if (m.motherVolThickness > 0.0 && m.motherVolWidth > 0.0)
           pv = whole_stave_volume_v.placeVolume(component_assembly, Position(-m.motherVolThickness / 2., 0., 0.));
         else
