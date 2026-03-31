@@ -93,12 +93,12 @@
 
         <comment> Representation of curved sensitive elements by number of trapezoids with flat surface. The more, the more round the sensors are. Multiplies the number of surfaces by this number, careful!
             Use '4' to be able to use conformal tracking. Use '1' to have perfect cylindrical surfaces. </comment>
-        <constant name="VTXIB_curved_nsegments" value="1"/> 
-        <constant name="VTXIB_curved_tolerance_r" value="0.040*mm"/> <!-- Needed for curved inner vertex as otherwise overlaps would be detected. -->
+        <constant name="VTXIB_curved_nsegments" value="16"/> 
+        <constant name="VTXIB_curved_tolerance_r" value="0.100*mm"/> <!-- Needed for curved inner vertex as otherwise overlaps would be detected. -->
     </define>
 
     <define> <comment> FCC-SEED global crucial layer properties innermost positions </comment>
-        <constant name="VTXIB_SEED_r1" value="CentralBeamPipe_rmax+BeamPipeWidth+VTXIB_SEED_Kapton_beampipe_thickness+VTXIB_curved_tolerance_r"/>
+        <constant name="VTXIB_SEED_r1" value="CentralBeamPipe_rmax+BeamPipeWidth+VTXIB_SEED_Kapton_beampipe_thickness"/>
         <constant name="VTXIB_SEED_r2" value="24.0*mm"/>
         <constant name="VTXIB_SEED_r3" value="36.0*mm"/>
         <constant name="VTXIB_SEED_r4" value="48.0*mm"/>
@@ -130,7 +130,7 @@
     </define>
 
     <define> <comment> Longeron-like support between two curved sensors ('betweenSensors') and between layers ('betweenLayers') </comment>
-        <constant name="Support_longeron_betweenSensors_thickness" value="1*mm"/>
+        <constant name="Support_longeron_betweenSensors_thickness" value="1*mm-VTXIB_curved_tolerance_r-0.04*mm"/>
         <constant name="Support_longeron_betweenSensors_tolerance" value="0.4*mm"/>
     </define>
 
@@ -211,10 +211,10 @@
         <constant name="Support_ring_width3" value="(VTXIB_SEED_r3+Support_ring_offset_r)/VTXIB_SEED_staves3*2*pi*1.01"/> <comment> '*1.04' to make the four ring pieces connect </comment>
         <constant name="Support_ring_width4" value="(VTXIB_SEED_r4+Support_ring_offset_r)/VTXIB_SEED_staves4*2*pi*1.00"/> <comment> '*1.04' to make the four ring pieces connect </comment>
 
-        <constant name="Support_ring_thickness1" value="VTXIB_SEED_r2 - VTXIB_SEED_curvature1 - Support_ring_offset_r - Support_longeron_betweenSensors_thickness - Support_longeron_betweenLayers_tolerance"/>
-        <constant name="Support_ring_thickness2" value="VTXIB_SEED_r3 - VTXIB_SEED_curvature2 - Support_ring_offset_r - Support_longeron_betweenSensors_thickness - Support_longeron_betweenLayers_tolerance"/>
-        <constant name="Support_ring_thickness3" value="VTXIB_SEED_r4 - VTXIB_SEED_curvature3 - Support_ring_offset_r - Support_longeron_betweenSensors_thickness - Support_longeron_betweenLayers_tolerance"/>
-        <constant name="Support_ring_thickness4" value="VTXIB_SEED_r5 - VTXIB_SEED_curvature4 - Support_ring_offset_r - Support_longeron_betweenSensors_thickness - Support_longeron_betweenLayers_tolerance"/>
+        <constant name="Support_ring_thickness1" value="VTXIB_SEED_r2 - VTXIB_SEED_curvature1 - Support_ring_offset_r - Support_longeron_betweenSensors_thickness - Support_longeron_betweenLayers_tolerance - VTXIB_curved_tolerance_r"/>
+        <constant name="Support_ring_thickness2" value="VTXIB_SEED_r3 - VTXIB_SEED_curvature2 - Support_ring_offset_r - Support_longeron_betweenSensors_thickness - Support_longeron_betweenLayers_tolerance - VTXIB_curved_tolerance_r"/>
+        <constant name="Support_ring_thickness3" value="VTXIB_SEED_r4 - VTXIB_SEED_curvature3 - Support_ring_offset_r - Support_longeron_betweenSensors_thickness - Support_longeron_betweenLayers_tolerance - VTXIB_curved_tolerance_r"/>
+        <constant name="Support_ring_thickness4" value="VTXIB_SEED_r5 - VTXIB_SEED_curvature4 - Support_ring_offset_r - Support_longeron_betweenSensors_thickness - Support_longeron_betweenLayers_tolerance - VTXIB_curved_tolerance_r"/>
 
         <constant name="Support_ring_offset_phi1" value= "(VTXIB_SEED_sensor_phi_periphery+VTXIB_SEED_sensor_phi_sensitive/2.)/VTXIB_SEED_curvature1*rad"/>
         <constant name="Support_ring_offset_phi2" value= "(VTXIB_SEED_sensor_phi_periphery+VTXIB_SEED_sensor_phi_sensitive/2.)/VTXIB_SEED_curvature2*rad"/>
