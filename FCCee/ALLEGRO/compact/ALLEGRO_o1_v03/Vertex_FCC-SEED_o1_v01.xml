@@ -60,9 +60,6 @@
     </define>
 
     <define> <comment> Remnants from CLD vertex detector (used for readout cable material and disks) </comment>
-
-    	<constant name="VertexBarrel_r1" value="1.3*cm"/>
-
         <constant name="VTXD_Sensitive_Thickness"   value="5.000000000e-02*mm"/>
         <constant name="VTXD_Support_Thickness"     value="28.000000000e-02*mm"/> <!-- +50% more material budget as in CLIC VTX -->
         <constant name="VTXD_DoubleLayer_Gap"       value="2.0*mm"/>
@@ -76,6 +73,22 @@
         <constant name="VTXD_rmin3" value="45*mm"/>
         <constant name="VTXD_ModuleThickness" value="1.22*mm"/>
         <constant name="VTXD_Overlap" value="0*mm"/>
+
+        <comment> For single-hit per disk layout </comment>
+        <constant name="VTXD_singleHit_z1" value="160*mm"/>
+        <constant name="VTXD_singleHit_z6" value="300*mm"/>
+        <constant name="VTXD_singleHit_z2" value="VTXD_singleHit_z1+1.*(VTXD_singleHit_z6-VTXD_singleHit_z1)/5.0"/>
+        <constant name="VTXD_singleHit_z3" value="VTXD_singleHit_z1+2.*(VTXD_singleHit_z6-VTXD_singleHit_z1)/5.0"/>
+        <constant name="VTXD_singleHit_z4" value="VTXD_singleHit_z1+3.*(VTXD_singleHit_z6-VTXD_singleHit_z1)/5.0"/>
+        <constant name="VTXD_singleHit_z5" value="VTXD_singleHit_z1+4.*(VTXD_singleHit_z6-VTXD_singleHit_z1)/5.0"/>
+
+        <constant name="VTXD_singleHit_rmin1" value="VTXD_singleHit_z1 * atan(VertexAcceptanceLimit)"/> <!-- tan(r/z) = VertexAcceptanceLimit -> r = z * atan(VertexAcceptanceLimit) -->
+        <constant name="VTXD_singleHit_rmin2" value="VTXD_singleHit_z2 * atan(VertexAcceptanceLimit)"/>
+        <constant name="VTXD_singleHit_rmin3" value="VTXD_singleHit_z3 * atan(VertexAcceptanceLimit)"/>
+        <constant name="VTXD_singleHit_rmin4" value="VTXD_singleHit_z4 * atan(VertexAcceptanceLimit)"/>
+        <constant name="VTXD_singleHit_rmin5" value="VTXD_singleHit_z5 * atan(VertexAcceptanceLimit)"/>
+        <constant name="VTXD_singleHit_rmin6" value="VTXD_singleHit_z6 * atan(VertexAcceptanceLimit)"/>
+
     </define>
 
     <define> <comment> FCC-SEED inner vertex sensor properties </comment>
@@ -115,6 +128,13 @@
         <constant name="VTXIB_SEED_staves3" value="12"/>
         <constant name="VTXIB_SEED_staves4" value="16"/>
         <constant name="VTXIB_SEED_staves5" value="20"/>
+
+        <!-- For double-layer layout -->
+        <!-- <constant name="VTXIB_SEED_staves1" value="8"/>
+        <constant name="VTXIB_SEED_staves2" value="16"/>
+        <constant name="VTXIB_SEED_staves3" value="24"/>
+        <constant name="VTXIB_SEED_staves4" value="32"/>
+        <constant name="VTXIB_SEED_staves5" value="40"/> -->
 
         <constant name="VTXIB_SEED_half_length1" value="VTXIB_SEED_nModules1*VTXIB_SEED_sensor_z/2."/>
         <constant name="VTXIB_SEED_half_length2" value="VTXIB_SEED_nModules2*VTXIB_SEED_sensor_z/2."/>
@@ -430,6 +450,7 @@
 
 	    <type_flags type=" DetType_TRACKER + DetType_PIXEL + DetType_VERTEX + DetType_ENDCAP"/>
 
+            <comment> Double-hit disks (unchanged from CLD) </comment>
             <module name="SiVertexEndcapModule1" vis="SiVertexModuleVis">
                 <trd x1="VTXD_rmin1 * tan(pi/(VTXD_nModules))+VTXD_Overlap*sin(pi/VTXD_nModules)" x2="VTXD_rmax * tan(pi/(VTXD_nModules))+VTXD_Overlap*sin(pi/VTXD_nModules)" z="(VTXD_rmax - VTXD_rmin1) / 2" />
                 <module_component thickness="VTXD_Support_Thickness/2.0"  material="Silicon" vis="SiVertexPassiveVis"/>
@@ -458,7 +479,7 @@
                 <module_component thickness="VTXD_Support_Thickness/2.0"  material="Silicon" vis="SiVertexPassiveVis"/>
             </module>
 
-	    <module name="SiVertexEndcapModule5" vis="SiVertexModuleVis">
+	        <module name="SiVertexEndcapModule5" vis="SiVertexModuleVis">
                 <trd x1="VTXD_rmin3 * tan(pi/(VTXD_nModules))+VTXD_Overlap*sin(pi/VTXD_nModules)" x2="VTXD_rmax * tan(pi/(VTXD_nModules))+VTXD_Overlap*sin(pi/VTXD_nModules)" z="(VTXD_rmax - VTXD_rmin3) / 2" />
                 <module_component thickness="VTXD_Support_Thickness/2.0"  material="Silicon" vis="SiVertexPassiveVis"/>
                 <module_component thickness="VTXD_Sensitive_Thickness/2.0"  material="Silicon" sensitive="true" vis="SiVertexSensitiveVis"/>
@@ -492,6 +513,68 @@
                 <ring r="(VTXD_rmax + VTXD_rmin3) / 2" zstart="VTXD_z3+VTXD_ModuleThickness/2.0" nmodules="(int) VTXD_nModules" dz="0*cm" phi0="pi/(VTXD_nModules)" module="SiVertexEndcapModule6"/>
             </layer>
 
+<!--            <comment> Single-hit vertex disks, with larger theta coverage (adapted from CLD) </comment>
+            <module name="SiVertexEndcapModule1" vis="SiVertexModuleVis">
+                <trd x1="VTXD_singleHit_rmin1 * tan(pi/(VTXD_nModules))+VTXD_Overlap*sin(pi/VTXD_nModules)" x2="VTXD_rmax * tan(pi/(VTXD_nModules))+VTXD_Overlap*sin(pi/VTXD_nModules)" z="(VTXD_rmax - VTXD_singleHit_rmin1) / 2" />
+                <module_component thickness="VTXD_Support_Thickness/2.0"  material="Silicon" vis="SiVertexPassiveVis"/>
+                <module_component thickness="VTXD_Sensitive_Thickness/2.0"  material="Silicon" sensitive="true" vis="SiVertexSensitiveVis"/>
+                <module_component thickness="VTXD_DoubleLayer_Gap/2.0"  material="Air" vis="SiVertexAir" />
+            </module>
+
+            <module name="SiVertexEndcapModule2" vis="SiVertexModuleVis">
+                <trd x1="VTXD_singleHit_rmin2 * tan(pi/(VTXD_nModules))+VTXD_Overlap*sin(pi/VTXD_nModules)" x2="VTXD_rmax * tan(pi/(VTXD_nModules))+VTXD_Overlap*sin(pi/VTXD_nModules)" z="(VTXD_rmax - VTXD_singleHit_rmin2) / 2" />
+                <module_component thickness="VTXD_DoubleLayer_Gap/2.0"  material="Air" vis="SiVertexAir" />
+                <module_component thickness="VTXD_Sensitive_Thickness/2.0"  material="Silicon" sensitive="true" vis="SiVertexSensitiveVis"/>
+                <module_component thickness="VTXD_Support_Thickness/2.0"  material="Silicon" vis="SiVertexPassiveVis"/>
+            </module>
+
+            <module name="SiVertexEndcapModule3" vis="SiVertexModuleVis">
+                <trd x1="VTXD_singleHit_rmin3 * tan(pi/(VTXD_nModules))+VTXD_Overlap*sin(pi/VTXD_nModules)" x2="VTXD_rmax * tan(pi/(VTXD_nModules))+VTXD_Overlap*sin(pi/VTXD_nModules)" z="(VTXD_rmax - VTXD_singleHit_rmin3) / 2" />
+                <module_component thickness="VTXD_Support_Thickness/2.0"  material="Silicon" vis="SiVertexPassiveVis"/>
+                <module_component thickness="VTXD_Sensitive_Thickness/2.0"  material="Silicon" sensitive="true" vis="SiVertexSensitiveVis"/>
+                <module_component thickness="VTXD_DoubleLayer_Gap/2.0"  material="Air" vis="SiVertexAir" />
+            </module>
+
+            <module name="SiVertexEndcapModule4" vis="SiVertexModuleVis">
+                <trd x1="VTXD_singleHit_rmin4 * tan(pi/(VTXD_nModules))+VTXD_Overlap*sin(pi/VTXD_nModules)" x2="VTXD_rmax * tan(pi/(VTXD_nModules))+VTXD_Overlap*sin(pi/VTXD_nModules)" z="(VTXD_rmax - VTXD_singleHit_rmin4) / 2" />
+                <module_component thickness="VTXD_DoubleLayer_Gap/2.0"  material="Air" vis="SiVertexAir" />
+                <module_component thickness="VTXD_Sensitive_Thickness/2.0"  material="Silicon" sensitive="true" vis="SiVertexSensitiveVis"/>
+                <module_component thickness="VTXD_Support_Thickness/2.0"  material="Silicon" vis="SiVertexPassiveVis"/>
+            </module>
+
+	        <module name="SiVertexEndcapModule5" vis="SiVertexModuleVis">
+                <trd x1="VTXD_singleHit_rmin5 * tan(pi/(VTXD_nModules))+VTXD_Overlap*sin(pi/VTXD_nModules)" x2="VTXD_rmax * tan(pi/(VTXD_nModules))+VTXD_Overlap*sin(pi/VTXD_nModules)" z="(VTXD_rmax - VTXD_singleHit_rmin5) / 2" />
+                <module_component thickness="VTXD_Support_Thickness/2.0"  material="Silicon" vis="SiVertexPassiveVis"/>
+                <module_component thickness="VTXD_Sensitive_Thickness/2.0"  material="Silicon" sensitive="true" vis="SiVertexSensitiveVis"/>
+                <module_component thickness="VTXD_DoubleLayer_Gap/2.0"  material="Air" vis="SiVertexAir" />
+            </module>
+
+            <module name="SiVertexEndcapModule6" vis="SiVertexModuleVis">
+                <trd x1="VTXD_singleHit_rmin6 * tan(pi/(VTXD_nModules))+VTXD_Overlap*sin(pi/VTXD_nModules)" x2="VTXD_rmax * tan(pi/(VTXD_nModules))+VTXD_Overlap*sin(pi/VTXD_nModules)" z="(VTXD_rmax - VTXD_singleHit_rmin6) / 2" />
+                <module_component thickness="VTXD_DoubleLayer_Gap/2.0"  material="Air" vis="SiVertexAir" />
+                <module_component thickness="VTXD_Sensitive_Thickness/2.0"  material="Silicon" sensitive="true" vis="SiVertexSensitiveVis"/>
+                <module_component thickness="VTXD_Support_Thickness/2.0"  material="Silicon" vis="SiVertexPassiveVis"/>
+            </module>
+
+            <layer id="0"  vis="SiVertexLayerVis">
+                <ring r="(VTXD_rmax + VTXD_singleHit_rmin1) / 2" zstart="VTXD_singleHit_z1" nmodules="(int) VTXD_nModules" dz="0*cm" phi0="pi/(VTXD_nModules)" module="SiVertexEndcapModule1"/>
+            </layer>
+            <layer id="1"  vis="SiVertexLayerVis">
+                <ring r="(VTXD_rmax + VTXD_singleHit_rmin2) / 2" zstart="VTXD_singleHit_z2" nmodules="(int) VTXD_nModules" dz="0*cm" phi0="pi/(VTXD_nModules)" module="SiVertexEndcapModule2"/>
+            </layer>
+            <layer id="2"  vis="SiVertexLayerVis">
+                <ring r="(VTXD_rmax + VTXD_singleHit_rmin3) / 2" zstart="VTXD_singleHit_z3" nmodules="(int) VTXD_nModules" dz="0*cm" phi0="pi/(VTXD_nModules)" module="SiVertexEndcapModule3"/>
+            </layer>
+            <layer id="3"  vis="SiVertexLayerVis">
+                <ring r="(VTXD_rmax + VTXD_singleHit_rmin4) / 2" zstart="VTXD_singleHit_z4" nmodules="(int) VTXD_nModules" dz="0*cm" phi0="pi/(VTXD_nModules)" module="SiVertexEndcapModule4"/>
+            </layer>
+
+            <layer id="4"  vis="SiVertexLayerVis">
+                <ring r="(VTXD_rmax + VTXD_singleHit_rmin5) / 2" zstart="VTXD_singleHit_z5" nmodules="(int) VTXD_nModules" dz="0*cm" phi0="pi/(VTXD_nModules)" module="SiVertexEndcapModule5"/>
+            </layer>
+            <layer id="5"  vis="SiVertexLayerVis">
+                <ring r="(VTXD_rmax + VTXD_singleHit_rmin6) / 2" zstart="VTXD_singleHit_z6" nmodules="(int) VTXD_nModules" dz="0*cm" phi0="pi/(VTXD_nModules)" module="SiVertexEndcapModule6"/>
+            </layer>-->
     </detector>
         <detector name="VertexVerticalCable" type="TrackerEndcapSupport_o1_v02" reflect="true"  region="VTXDRegion">
 	    <envelope>
