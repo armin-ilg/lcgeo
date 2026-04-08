@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+
+
+  <info name="IDEA_o1_v04_onlyOneSensorVertex"
+    title="FCCee IDEA detector geometry master file, with only one sensor for test purposes!"
+    author="Armin Ilg"
+    url="no"
+    status="development"
+    version="o1_v04">
+    <comment>
+      Version o1_v04 of the IDEA detector, but with only one vertex sensor!
+    </comment>
+  </info>
+
+  <include ref="${DD4hepINSTALL}/DDDetectors/compact/detector_types.xml" />
+
+  <includes>
+    <gdmlFile  ref="../IDEA_o1_v03/elements_o1_v01.xml"/>
+    <gdmlFile  ref="../IDEA_o1_v03/materials_o1_v03.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_size" value="25*m"/>
+    <constant name="world_x" value="world_size"/>
+    <constant name="world_y" value="world_size"/>
+    <constant name="world_z" value="world_size"/>
+  </define>
+
+  <!-- Import dimensions -->
+  <include ref="DectDimensions_IDEA_o1_v04.xml"/>
+
+
+  <include ref="VertexComplete_o1_v04_onlyOneSensorVertex.xml"/>
+
+  <plugins>
+    <plugin name="DD4hepVolumeManager"/>
+    <plugin name="InstallSurfaceManager"/>
+  </plugins>
+
+  <parallelworld_volume name="tracking_volume" anchor="/world" material="Air" connected="true"
+      vis="VisibleBlue">
+      <shape type="Polycone" material="Air">
+          <!-- small-angle approximation for tan(theta) -->
+          <zplane z="-SiWrD_zmax"   rmin="120*mrad * SiWrD_zmax" rmax="SiWrD_outer_radius" />
+          <zplane z="-CentralBeamPipe_zmax"       rmin="0"                            rmax="SiWrD_outer_radius" />
+          <zplane z="+CentralBeamPipe_zmax"       rmin="0"                            rmax="SiWrD_outer_radius" />
+          <zplane z="+SiWrD_zmax"   rmin="120*mrad * SiWrD_zmax" rmax="SiWrD_outer_radius" />
+      </shape>
+  </parallelworld_volume>
+
+  <fields>
+    <!-- FIXME The magnetic field should be a map derived from FEM tools including all field sources, the return yoke geometry, etc -->
+    <!-- Currently the outer field value is kind of arbitrary and it will also impregnate the calorimeter volume while the field there is very small -->
+    <field name="GlobalSolenoid" type="solenoid"
+           inner_field="SolenoidField"
+           outer_field="-1.7*tesla"
+           zmax="Solenoid_Coil_half_length"
+           outer_radius="Solenoid_Coil_radius">
+    </field>
+  </fields>
+</lccdd>

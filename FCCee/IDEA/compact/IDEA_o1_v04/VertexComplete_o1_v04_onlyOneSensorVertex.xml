@@ -1,0 +1,95 @@
+<!-- Changes :
+   o1_v03 : IDEA/ALLEGRO vertex detector described in FCC Feasibility Study Final Report (2025). An ultra-light inner vertex detector design with four layers is included as well, enabled by setting "nInnerVertexLayers" to 4, disabling the layers below "Vertex inner barrel" and instead enabling the ultra-light layers below "Ultra-light inner vertex"
+   o1_v04 : Vertex disks have the better measurement direction now in phi (geometry unchanged). Reduced sensitive thickness for ultra-light curved vertex. Removed 'auxiliary pads' in the ultra-light curved vertex to increase the area that is sensitive by about 2.5% (see ALICE IT3 TDR). Ultra-light curved vertex detector sensors are now approximated by trapezoidal volumes, enabling the use of conformal tracking that currently requires non-bent surfaces.
+-->
+
+<lccdd>
+    <!--
+        Complete, detailed vertex detector: Started with CLD vertex detector design from FCCDetectors, but adapted to describe IDEA engineered vertex detector design and extended functionality of detector builders
+        Niloufar Alipour Tehrani (adapting original CLD version), Armin Ilg (adapting and extending to IDEA)
+        A Vertex Detector for the FCC-ee IDEA detector concept, based on the engineered design by Fabrizio Palla and Filippo Bosi (INFN Pisa), implemented in DD4hep by Armin Ilg (UZH)
+    -->
+
+    <comment>Vertex inner barrel </comment>
+
+    <display>
+        <vis name="VTXSensitiveVis"         alpha="1.0" r="1.0"     g="1.0"     b="0.0"   showDaughters="true"  visible="true"/>
+        <vis name="VTXPeripheryVis"         alpha="1.0" r="200/255" g="254/255" b="0.0"   showDaughters="true"  visible="true"/>    
+        <vis name="VTXMetalLayerVis"        alpha="0.2" r="200/255" g="254/255" b="0.0"   showDaughters="true"  visible="true"/>    
+        <vis name="VTXSupportVis"  	        alpha="1.0" r="0.2"   	g="0.2"     b="0.2"   showDaughters="true"  visible="true"/>
+        <vis name="VTXCarbonFoamVis"        alpha="1.0" r="0.2" 	g="0.2"     b="0.2"   showDaughters="true"  visible="true"/>
+        <vis name="VTXCableVis"             alpha="1.0" r="0.0"     g="1.0"     b="0.4"   showDaughters="true"  visible="true"/>
+        <vis name="VTXHybridVis"            alpha="1.0" r="0.35"    g="0.83"    b="0.33"  showDaughters="true"  visible="true"/>
+        <vis name="VTXPipingVis"            alpha="1.0" r="1.0"     g="1.0"     b="1.0"   showDaughters="true"  visible="true"/>
+        <vis name="VTXWaterVis"             alpha="1.0" r="0.0"     g="0.0"     b="1.0"   showDaughters="true"  visible="true"/>
+        <vis name="VTXGlueVis"              alpha="1.0" r="1.0"     g="0.75"    b="0.79"  showDaughters="true"  visible="true"/>
+        <vis name="VTXRohacellVis"          alpha="1.0" r="1.0"     g="1.0"     b="1.0"   showDaughters="true"  visible="true"/>
+        <vis name="VTXPEEKVis"              alpha="1.0" r="1.0"     g="0.65"    b="0.0"   showDaughters="true"  visible="true"/>
+        <vis name="VTXtrussStructureVis"    alpha="0.3" r="0.5"     g="0.5"     b="0.5"   showDaughters="true"  visible="true"/>
+        <vis name="VTXIBTube"  	            alpha="0.8" r="0.25"   	g="0.25"    b="0.2"   showDaughters="true"  visible="true"/>
+        <vis name="VTXDiskSupportVis"       alpha="0.2" r="0.2"     g="0.2"     b="0.2"   showDaughters="true"  visible="true"/>
+    </display>
+
+    <define>
+        <comment> To change to ultra-light inner vertex design, simply set nInnerVertexLayers to 4. Everything else is taken care of </comment>
+        <constant name="nInnerVertexLayers" value="3"/>
+    </define>
+
+    <detectors>
+        <comment> The envelope consists of a tube generally surrounding the vertex barrel and endcap disks, subtracted by a
+            cone describing the upper acceptance of the LumiCal </comment>
+        <detector name="Vertex" type="DD4hep_SubdetectorAssembly" vis="VXDVis">
+            <type_flags type=" DetType_TRACKER + DetType_PIXEL + DetType_VERTEX"/>
+            <shape type="Tube" rmin="0." rmax="2.*cm" dz="10.*cm" material="Vacuum"/>
+
+            <comment>Vertex Assembly</comment>
+            <composite name="VertexBarrel_assembly"/>
+        </detector>
+    </detectors>
+
+    <define> <comment> Vertex inner barrel (VTXIB) properties </comment>
+        <constant name="VTXIB_pitch_z"      value="0.025*mm"/>
+        <constant name="VTXIB_pitch_phi"    value="0.025*mm"/>
+
+        <constant name="VTXIB_sensor_z" value="1000.*VTXIB_pitch_z"/>
+        <constant name="VTXIB_sensor_rphi" value="1000.*VTXIB_pitch_phi"/>
+        <constant name="VTXIB_insensitive_thickness_below"  value="0e-03*mm"/>
+        <constant name="VTXIB_sensitive_thickness"          value="50e-03*mm"/>
+        <constant name="VTXIB_insensitive_thickness_above"  value="0e-03*mm"/>
+        <constant name="VTXIB_sensor_thickness"   value="VTXIB_insensitive_thickness_below+VTXIB_sensitive_thickness+VTXIB_insensitive_thickness_above"/>
+
+
+        <constant name="VTXIB_r1" value="VTXIB_r_min_layer"/> 
+    </define>
+
+    <readouts> <comment>  Definition of the readout segmentation/definition </comment>
+        <readout name="VertexBarrelCollection"> 
+            <segmentation type="MultiSegmentation" key="layer">
+                <segmentation name="VTXIBgrid" type="CartesianGridXY" key_min="0" key_max="0" grid_size_x="VTXIB_pitch_phi" grid_size_y="VTXIB_pitch_z"/> <comment> Segmentation for the classic inner vertex or curved ultra-light inner vertex </comment>
+            </segmentation>
+            <id>${GlobalTrackerReadoutID},x:32:-16,y:-16</id>
+        </readout>  
+    </readouts>
+
+    <detectors>
+        <detector name="VertexBarrel_assembly" type="DD4hep_SubdetectorAssembly" vis="VXDVis">
+            <type_flags type=" DetType_TRACKER + DetType_PIXEL + DetType_VERTEX"/>
+            <composite name="VertexBarrel"/>
+        </detector>
+
+        <detector name="VertexBarrel" type="VertexBarrel_detailed_o1_v03" vis="VXDVis" id="DetID_VXD_Barrel" readout="VertexBarrelCollection"  region="VTXBRegion">
+            <envelope vis="VXDVis">
+                <shape type="Assembly"/>
+            </envelope>
+
+            <type_flags type=" DetType_TRACKER + DetType_PIXEL + DetType_VERTEX + DetType_BARREL"/>
+            
+            <stave name="VTXIBStave1" length="VTXIB_sensor_z/2.">
+                <sensor name="ARCADIA" r="0.0*mm" thickness="VTXIB_sensor_thickness" material="Silicon">
+                    <component name="sensor"    sensitive="True"  vis="VTXSensitiveVis" xmin="-VTXIB_sensor_rphi/2.0" xmax="VTXIB_sensor_rphi/2.0" ymin="-VTXIB_sensor_z/2.0" ymax="+VTXIB_sensor_z/2.0" sensor_insensitive_thickness_below="VTXIB_insensitive_thickness_below" thickness="VTXIB_sensitive_thickness" sensor_insensitive_thickness_above="VTXIB_insensitive_thickness_above"/>
+                </sensor>
+            </stave>
+            <layer nLadders="1" phi0="0.0" r="1.0*cm" offset="0." id="0" nmodules="1" name="VTXIBStave1" step="0." dr="0." motherVolLength="2.*VTXIB_sensor_z" motherVolThickness="2.0*cm"/>
+        </detector>
+    </detectors>
+</lccdd>
