@@ -18,10 +18,10 @@
                     <shape type="BooleanShape" operation="Subtraction" material="Air">
                         <shape type="BooleanShape" operation="Subtraction" material="Air">
                             <shape type="Tube" rmin="CentralBeamPipe_rmax+BeamPipeWidth" rmax="VTXOB_r_max_layer+VTXOB_rmax_clearance" dz="Vertex_half_length"/>
-                            <shape type="Cone" rmin1="0" rmax1="tan(VertexAcceptanceLimit)*2000.0*mm" rmin2="0" rmax2="0" z="2000.0*mm/2."/>
+                            <shape type="Cone" rmin1="0" rmax1="tan(VertexClearanceTheta)*2000.0*mm" rmin2="0" rmax2="0" z="2000.0*mm/2."/>
                             <position x="0" y="0" z="-2000.0*mm/2." />
                         </shape>                            
-                        <shape type="Cone" rmin1="0" rmax1="0" rmin2="0" rmax2="tan(VertexAcceptanceLimit)*2000.0*mm" z="2000.0*mm/2."/>
+                        <shape type="Cone" rmin1="0" rmax1="0" rmin2="0" rmax2="tan(VertexClearanceTheta)*2000.0*mm" z="2000.0*mm/2."/>
                         <position x="0" y="0" z="2000.0*mm/2." />
                     </shape>
                     <shape type="Tube" rmin="0" rmax="CentralBeamPipe_rmax+BeamPipeWidth" dz="Vertex_half_length"/> <comment> Cut out the central beam pipe area to avoid overlaps </comment>
@@ -94,7 +94,7 @@
     </define>
 
     <define> <comment> FCC-SEED inner vertex sensor properties </comment>
-        <constant name="VTXIB_SEED_sensor_phi_sensitive" value="19.2*mm"/>
+        <constant name="VTXIB_SEED_sensor_phi_sensitive" value="20.5*mm"/>
         <constant name="VTXIB_SEED_sensor_phi_periphery" value="3.0*mm"/>
         <constant name="VTXIB_SEED_sensor_phi" value="VTXIB_SEED_sensor_phi_sensitive+VTXIB_SEED_sensor_phi_periphery"/>
         <constant name="VTXIB_SEED_sensor_z_sensitive" value="29.9*mm"/>
@@ -175,11 +175,12 @@
         <constant name="VTXIB_SEED_sensor_offset4" value="(VTXIB_SEED_total_sensor_thickness + VTXIB_curved_tolerance_r + Support_longeron_betweenSensors_thickness+Support_longeron_betweenSensors_tolerance)/sin(4./VTXIB_SEED_staves4*90*deg)"/>
         <constant name="VTXIB_SEED_sensor_offset5" value="(VTXIB_SEED_total_sensor_thickness + VTXIB_curved_tolerance_r + Support_longeron_betweenSensors_thickness+Support_longeron_betweenSensors_tolerance)/sin(4./VTXIB_SEED_staves5*90*deg)"/>
 
-        <constant name="VTXIB_SEED_phi_offset1" value="0."/>
-        <constant name="VTXIB_SEED_phi_offset2" value="VTXIB_SEED_staves1/VTXIB_SEED_staves2*90*deg/2."/>
-        <constant name="VTXIB_SEED_phi_offset3" value="VTXIB_SEED_staves1/VTXIB_SEED_staves3*90*deg/2."/>
-        <constant name="VTXIB_SEED_phi_offset4" value="VTXIB_SEED_staves1/VTXIB_SEED_staves4*90*deg/2."/>
-        <constant name="VTXIB_SEED_phi_offset5" value="VTXIB_SEED_staves1/VTXIB_SEED_staves5*90*deg/2."/>
+        <constant name="VTXIB_SEED_phi_offset"  value="VTXIB_SEED_sensor_phi_sensitive/2./VTXIB_SEED_curvature1*360*deg"/> <comment> To have first sensor start at phi=0 so along the x-axis </comment>
+        <constant name="VTXIB_SEED_phi_offset1" value="VTXIB_SEED_phi_offset+VTXIB_SEED_staves1/VTXIB_SEED_staves1*90*deg/2."/>
+        <constant name="VTXIB_SEED_phi_offset2" value="VTXIB_SEED_phi_offset+VTXIB_SEED_staves1/VTXIB_SEED_staves2*90*deg/2.+VTXIB_SEED_staves1/VTXIB_SEED_staves2*45*deg"/>
+        <constant name="VTXIB_SEED_phi_offset3" value="VTXIB_SEED_phi_offset+VTXIB_SEED_staves1/VTXIB_SEED_staves3*90*deg/2.+VTXIB_SEED_staves1/VTXIB_SEED_staves3*45*deg"/>
+        <constant name="VTXIB_SEED_phi_offset4" value="VTXIB_SEED_phi_offset+VTXIB_SEED_staves1/VTXIB_SEED_staves4*90*deg/2.+VTXIB_SEED_staves1/VTXIB_SEED_staves4*45*deg"/>
+        <constant name="VTXIB_SEED_phi_offset5" value="VTXIB_SEED_phi_offset+VTXIB_SEED_staves1/VTXIB_SEED_staves5*90*deg/2.+VTXIB_SEED_staves1/VTXIB_SEED_staves5*45*deg"/>
     </define>
 
     <define> <comment> Flex on top of sensor periphery </comment>
@@ -262,7 +263,7 @@
 
     <define> <comment> Carbon fibre support tube holding the complete inner vertex </comment>
         <constant name="VTXIB_tube_thickness" value="0.2*mm"/> 
-        <constant name="VTXIB_tube_r" value="VTXIB_SEED_curvature5+2.*VTXIB_SEED_total_sensor_thickness+Support_longeron_betweenSensors_thickness+Support_longeron_betweenSensors_tolerance+Flex_total_thickness+6.*VTXIB_curved_tolerance_r"/> 
+        <constant name="VTXIB_tube_r" value="VTXIB_SEED_curvature5+2.*VTXIB_SEED_total_sensor_thickness+Support_longeron_betweenSensors_thickness+Support_longeron_betweenSensors_tolerance+Flex_total_thickness+7.*VTXIB_curved_tolerance_r"/> 
     </define>
 
     <!--  Definition of the readout segmentation/definition  -->
@@ -304,9 +305,9 @@
                 </sensor>
             
                 <components name="Support_longeron_between_sensors" r="Support_longeron_betweenSensors_offset_r1" length="VTXIB_SEED_half_length1-Support_ring_length"> <comment> In the first layer make the support a bit thinner and split it into multiple segments, and make it 5% less wide to avoid overlaps </comment>
-                    <component sensitive="False" isCurved="true" vis="CarbonVis" material="CarbonFoam" thickness="0.8*Support_longeron_betweenSensors_thickness" width="Support_longeron_betweenSensors_width/3.*0.95" r="0.2*Support_longeron_betweenSensors_thickness" phi_offset="Support_longeron_betweenSensors_phi1_1"/>
-                    <component sensitive="False" isCurved="true" vis="CarbonVis" material="CarbonFoam" thickness="0.5*Support_longeron_betweenSensors_thickness" width="Support_longeron_betweenSensors_width/3.*0.95" r="0.5*Support_longeron_betweenSensors_thickness" phi_offset="Support_longeron_betweenSensors_phi1_2"/>
-                    <component sensitive="False" isCurved="true" vis="CarbonVis" material="CarbonFoam" thickness="0.2*Support_longeron_betweenSensors_thickness" width="Support_longeron_betweenSensors_width/3.*0.95" r="0.8*Support_longeron_betweenSensors_thickness" phi_offset="Support_longeron_betweenSensors_phi1_3"/>
+                    <component sensitive="False" isCurved="true" vis="CarbonVis" material="CarbonFoam" thickness="0.75*Support_longeron_betweenSensors_thickness" width="Support_longeron_betweenSensors_width/3.*0.95" r="0.25*Support_longeron_betweenSensors_thickness" phi_offset="Support_longeron_betweenSensors_phi1_1"/>
+                    <component sensitive="False" isCurved="true" vis="CarbonVis" material="CarbonFoam" thickness="0.45*Support_longeron_betweenSensors_thickness" width="Support_longeron_betweenSensors_width/3.*0.95" r="0.55*Support_longeron_betweenSensors_thickness" phi_offset="Support_longeron_betweenSensors_phi1_2"/>
+                    <component sensitive="False" isCurved="true" vis="CarbonVis" material="CarbonFoam" thickness="0.1*Support_longeron_betweenSensors_thickness" width="Support_longeron_betweenSensors_width/3.*0.95" r="0.9*Support_longeron_betweenSensors_thickness" phi_offset="Support_longeron_betweenSensors_phi1_3"/>
                 </components>
 
                 <components name="Support_longeron_between_layers" r="Support_longeron_betweenLayers_offset_r1" length="VTXIB_SEED_half_length1-Support_ring_length">
