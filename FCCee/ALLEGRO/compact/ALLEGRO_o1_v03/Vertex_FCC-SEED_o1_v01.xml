@@ -58,7 +58,6 @@
     <define> <comment> Kapton layer between the beam pipe and the first vertex layer for electrical insulation </comment>
         <constant name="VTXIB_SEED_Kapton_beampipe_thickness" value="0.1*mm"/> 
         <constant name="VTXIB_SEED_Kapton_beampipe_r" value="CentralBeamPipe_rmax+BeamPipeWidth"/> 
-        <constant name="VTXIB_SEED_rmin_correction" value="0.15*mm"/>
     </define>
 
     <define> <comment> Remnants from CLD vertex detector (used for readout cable material and disks) </comment>
@@ -94,7 +93,7 @@
     </define>
 
     <define> <comment> FCC-SEED inner vertex sensor properties </comment>
-        <constant name="VTXIB_SEED_sensor_phi_sensitive" value="20.5*mm"/>
+        <constant name="VTXIB_SEED_sensor_phi_sensitive" value="20.0*mm"/>
         <constant name="VTXIB_SEED_sensor_phi_periphery" value="3.0*mm"/>
         <constant name="VTXIB_SEED_sensor_phi" value="VTXIB_SEED_sensor_phi_sensitive+VTXIB_SEED_sensor_phi_periphery"/>
         <constant name="VTXIB_SEED_sensor_z_sensitive" value="29.9*mm"/>
@@ -153,7 +152,7 @@
 
     <define> <comment> Longeron-like support between two curved sensors ('betweenSensors') and between layers ('betweenLayers') </comment>
         <constant name="Support_longeron_betweenSensors_tolerance" value="VTXIB_curved_tolerance_r+0.1*mm"/>
-        <constant name="Support_longeron_betweenSensors_thickness" value="1*mm-Support_longeron_betweenSensors_tolerance"/>
+        <constant name="Support_longeron_betweenSensors_thickness" value="0.5*mm-Support_longeron_betweenSensors_tolerance"/>
     </define>
 
     <define> <comment> Curvature of the curved sensors, not the same as the closest radial position! </comment>
@@ -244,10 +243,10 @@
 
         <constant name="Support_ring_offset_r" value="VTXIB_SEED_total_sensor_thickness+Flex_total_thickness+VTXIB_curved_tolerance_r"/>
 
-        <constant name="Support_ring_width1" value="(VTXIB_SEED_r1+Support_ring_offset_r)/VTXIB_SEED_staves1*2*pi*1.03"/> <comment> scaling to make the four ring pieces connect </comment>
-        <constant name="Support_ring_width2" value="(VTXIB_SEED_r2+Support_ring_offset_r)/VTXIB_SEED_staves2*2*pi*1.01"/> <comment> scaling to make the four ring pieces connect </comment>
-        <constant name="Support_ring_width3" value="(VTXIB_SEED_r3+Support_ring_offset_r)/VTXIB_SEED_staves3*2*pi*1.01"/> <comment> scaling to make the four ring pieces connect </comment>
-        <constant name="Support_ring_width4" value="(VTXIB_SEED_r4+Support_ring_offset_r)/VTXIB_SEED_staves4*2*pi*1.01"/> <comment> scaling to make the four ring pieces connect </comment>
+        <constant name="Support_ring_width1" value="(VTXIB_SEED_r1+Support_ring_offset_r)/VTXIB_SEED_staves1*2*pi*1.02"/> <comment> scaling to make the four ring pieces connect </comment>
+        <constant name="Support_ring_width2" value="(VTXIB_SEED_r2+Support_ring_offset_r)/VTXIB_SEED_staves2*2*pi*1.00"/> <comment> scaling to make the four ring pieces connect </comment>
+        <constant name="Support_ring_width3" value="(VTXIB_SEED_r3+Support_ring_offset_r)/VTXIB_SEED_staves3*2*pi*1.00"/> <comment> scaling to make the four ring pieces connect </comment>
+        <constant name="Support_ring_width4" value="(VTXIB_SEED_r4+Support_ring_offset_r)/VTXIB_SEED_staves4*2*pi*1.00"/> <comment> scaling to make the four ring pieces connect </comment>
 
 
         <constant name="Support_ring_thickness1" value="Support_longeron_betweenLayers_thickness1-0.5*mm"/> <comment> A bit less thick in first layer to avoid overlap </comment>
