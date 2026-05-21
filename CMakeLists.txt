@@ -215,17 +215,17 @@ install(FILES ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_CMAKEDIR}/k4geoConfig.cmake
 
 if(INSTALL_BEAMPIPE_STL_FILES)
 
-    set(STL_FILES
-          "AlBeMet162_30042024.stl"
-          "Copper_pipe_28092023.stl"
-          "Gold_19042024.stl"
-          "Paraffine_19042024.stl"
-          "Tungsten_mask_02102023.stl"
-          "Water_30042024.stl"
-        )
+  set(STL_FILES
+    "Pipe_240430/AlBeMet162_30042024.stl"
+    "Pipe_01042026/Copper_lungo.stl"
+    "Pipe_240430/Gold_19042024.stl"
+    "Pipe_240430/Paraffine_19042024.stl"
+    "Pipe_240430/Water_30042024.stl"
+    "Pipe_01042026/Maschere_2.stl"
+  )
     # Set main FCC url
     set(FCC_URL "https://fccsw.web.cern.ch/fccsw/filesForSimDigiReco")
-    set(STL_PATH "stl_files/Pipe_240430")
+    set(STL_PATH "stl_files")
 
     # Set the output directory where the file will be placed
     set(OUTPUT_DIR "${PROJECT_SOURCE_DIR}/FCCee/MDI/compact/${STL_PATH}")
