@@ -1,0 +1,252 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+
+    <!-- Materials unique to the MDI -->
+    <materials>
+
+      <!-- for Beam Pipe -->
+      <material name="SolenoidMixture">
+	<D value="4.38" unit="g/cm3"/>
+	<fraction n="0.666" ref="Al"/>
+	<fraction n="0.166" ref="Cu"/>
+	<fraction n="0.084" ref="Ti"/>
+	<fraction n="0.084" ref="Nb"/>
+      </material>
+      
+      <material name="AlBeMet162">
+	<D value="2.1" unit="g/cm3"/>
+	<fraction n="0.38" ref="Al"/>
+	<fraction n="0.62" ref="Be"/>
+      </material>
+      
+      <material name="LiquidNDecane">
+	<D value="0.73" unit="g/cm3"/>
+	<composite n="10" ref="C" />
+	<composite n="22" ref="H" />
+      </material>
+
+      <material name="Water">
+	<D value="1" unit="g/cm3" />
+	<composite n="2" ref="H" />
+	<composite n="1" ref="O" />
+      </material>
+      
+      <!-- for LumiCal -->
+      <material name="TungstenDens24">
+	<D value="17.8" unit="g/cm3"/>
+	<fraction n="0.93" ref="W"/>
+	<fraction n="0.061" ref="Ni"/>
+	<fraction n="0.009" ref="Fe"/>
+      </material>
+
+      <!-- for Final Focus Quadrupoles, from M. Koratzinos -->
+      <material name="Paraffine" state="solid">
+	<D unit="g/cm3" value="0.8"/>
+	<fraction n="0.334" ref="C"/>
+	<fraction n="0.666" ref="H"/>
+      </material>
+      
+      <material name="FFQMaterial">
+	<D type="density" value="3.367" unit="g/cm3"/>
+	<fraction n="0.654058214" ref="Al"/>
+	<fraction n="0.03095534" ref="Nb"/>
+	<fraction n="0.03095534" ref="Ti"/>
+	<fraction n="0.117630293" ref="Cu"/>
+	<fraction n="0.097743288" ref="Paraffine"/>
+	<fraction n="0.068657524" ref="Kapton"/>
+      </material>
+
+      <!-- needed for CAD import, not really used. It's Steel but can be changed -->
+      <material name="DefaultMaterial">
+	<D value="7.85" unit="g/cm3"/>
+	<fraction n="0.998" ref="Fe"/>
+	<fraction n=".002"  ref="C"/>
+      </material>
+      
+    </materials>
+
+    
+    <define>
+        <constant name="CrossingAngle" value="0.030*rad"/>
+        <constant name="SolenoidField" value="2*tesla"/>
+
+	<!-- new dimensions for cryostat and solenoids -->
+	<constant name="cryo_min_z" value="2150*mm"/>
+	<constant name="cryo_max_z" value="5500*mm"/>
+	<constant name="cryo_out_r" value="225*mm"/> <!-- Brett's skew design --> 
+	<constant name="cryo_nose_out_r2" value="215*mm"/>
+	<constant name="cryo_nose_out_r1" value="140*mm"/>
+	<constant name="cryo_nose_min_z"  value="1400*mm"/>  <!-- coil end -->
+	
+	<!-- elements for the cylindrical part -->
+	<constant name="cryo_vacuum_vessel_thck"  value="10*mm"/>
+        <constant name="cryo_vacuum_gap_1_thck"   value=" 9*mm"/>
+	<constant name="cryo_thermal_shield_thck" value=" 3*mm"/>
+	<constant name="cryo_vacuum_gap_2_thck"   value=" 9*mm"/>
+	<constant name="cryo_helium_vessel_thck"  value="10*mm"/>
+	<constant name="cryo_helium_sol_thck"     value="6*mm"/>
+        <constant name="cryo_solenoid_thck"       value="10*mm"/>
+        <constant name="cryo_coil_support_thck1"  value="72*mm"/>
+        <constant name="cryo_coil_support_thck2"  value="23.25*mm"/> <!-- 15mrad slope -->
+	<constant name="cryo_tungsten_thck"       value="5*mm"/>
+        <constant name="cryo_filler_thck"         value="10*mm"/>
+
+	<!-- elements around beam pipe (Upstream/Dnstream) -->
+	<constant name="cryo_helium_ffq_thck"     value="5*mm"/>
+	<constant name="cryo_support_ffq_thck"    value="3*mm"/>
+	<constant name="cryo_vacuum_ffq_thck"     value="2*mm"/>
+	<constant name="cryo_vessel_ffq_thck"     value="1*mm"/>
+	<constant name="cryo_air_ffq_thck"        value="1*mm"/>
+	<constant name="cryo_tungsten_ffq_thck"    value="2*mm"/>
+
+	
+	<constant name="cryo_vacuum_vessel_rmax"  value="cryo_out_r"/>
+	<constant name="cryo_vacuum_vessel_rmin"  value="cryo_vacuum_vessel_rmax-cryo_vacuum_vessel_thck"/>
+        <constant name="cryo_vacuum_gap_1_rmax"   value="cryo_vacuum_vessel_rmin"/>
+        <constant name="cryo_vacuum_gap_1_rmin"   value="cryo_vacuum_gap_1_rmax-cryo_vacuum_gap_1_thck"/>
+        <constant name="cryo_thermal_shield_rmax" value="cryo_vacuum_gap_1_rmin"/>
+	<constant name="cryo_thermal_shield_rmin" value="cryo_thermal_shield_rmax-cryo_thermal_shield_thck"/>
+        <constant name="cryo_vacuum_gap_2_rmax"   value="cryo_thermal_shield_rmin"/>
+	<constant name="cryo_vacuum_gap_2_rmin"   value="cryo_vacuum_gap_2_rmax-cryo_vacuum_gap_2_thck"/>
+        <constant name="cryo_helium_vessel_rmax"  value="cryo_vacuum_gap_2_rmin"/>
+	<constant name="cryo_helium_vessel_rmin"  value="cryo_helium_vessel_rmax-cryo_helium_vessel_thck"/>
+	<constant name="cryo_helium_sol_rmax"     value="cryo_helium_vessel_rmin"/>
+        <constant name="cryo_helium_sol_rmin"     value="cryo_helium_sol_rmax-cryo_helium_sol_thck"/>
+	<constant name="cryo_solenoid_rmax"       value="cryo_helium_sol_rmin"/>
+        <constant name="cryo_solenoid_rmin"       value="cryo_solenoid_rmax-cryo_solenoid_thck"/>
+        <constant name="cryo_coil_support_rmax"   value="cryo_solenoid_rmin"/>
+	<constant name="cryo_coil_support_rmin1"  value="cryo_coil_support_rmax-cryo_coil_support_thck1"/>
+	<constant name="cryo_coil_support_rmin2"  value="cryo_coil_support_rmax-cryo_coil_support_thck2"/>
+	<constant name="cryo_tungsten_rmax1"      value="cryo_coil_support_rmin1"/>
+        <constant name="cryo_tungsten_rmax2"      value="cryo_coil_support_rmin2"/>
+        <constant name="cryo_tungsten_rmin1"      value="cryo_tungsten_rmax1-cryo_tungsten_thck"/>
+        <constant name="cryo_tungsten_rmin2"      value="cryo_tungsten_rmax2-cryo_tungsten_thck"/>
+        <constant name="cryo_filler_rmax1"        value="cryo_tungsten_rmin1"/>
+        <constant name="cryo_filler_rmax2"        value="cryo_tungsten_rmin2"/>
+
+	<constant name="cryo_tungsten_ffq_rmin"   value="18*mm"/>
+	<constant name="cryo_tungsten_ffq_rmax"   value="cryo_tungsten_ffq_rmin + cryo_tungsten_ffq_thck"/>
+	<constant name="cryo_vessel_ffq_rmin"     value="cryo_tungsten_ffq_rmax + cryo_air_ffq_thck"/>
+	<constant name="cryo_vessel_ffq_rmax"     value="cryo_vessel_ffq_rmin + cryo_vessel_ffq_thck"/>
+	<constant name="cryo_vacuum_ffq_rmin"     value="cryo_vessel_ffq_rmax"/>
+	<constant name="cryo_vacuum_ffq_rmax"     value="cryo_vacuum_ffq_rmin + cryo_vacuum_ffq_thck"/>
+	<constant name="cryo_support_ffq_rmin"    value="cryo_vacuum_ffq_rmax"/>
+	<constant name="cryo_support_ffq_rmax"    value="cryo_support_ffq_rmin + cryo_support_ffq_thck"/>
+        <constant name="cryo_helium_ffq_rmin"     value="35.75*mm"/>
+        <constant name="cryo_helium_ffq_rmax"     value="cryo_helium_ffq_rmin+cryo_helium_ffq_thck"/>
+
+	<constant name="cryo_filler_rmin"         value="cryo_helium_ffq_rmax"/>
+
+	<constant name="cryo_filler_ffq_rmax1"    value="69*mm+3*mm"/>
+	<constant name="cryo_filler_ffq_rmax2"    value="74*mm+3*mm"/>
+	<constant name="cryo_filler_ffq_rmin"     value="27*mm"/>
+
+	<constant name="nose_vacuum_vessel_2_rmax1"    value="cryo_nose_out_r2"/>
+        <constant name="nose_vacuum_vessel_2_rmax2"    value="cryo_out_r"/>
+        <constant name="nose_vacuum_vessel_2_rmin1"    value="nose_vacuum_vessel_2_rmax1 - cryo_vacuum_vessel_thck"/>
+        <constant name="nose_vacuum_vessel_2_rmin2"    value="nose_vacuum_vessel_2_rmax2 - cryo_vacuum_vessel_thck"/>
+        <constant name="nose_vacuum_gap_1_2_rmax1"     value="nose_vacuum_vessel_2_rmin1"/>
+        <constant name="nose_vacuum_gap_1_2_rmax2"     value="nose_vacuum_vessel_2_rmin2"/>
+        <constant name="nose_vacuum_gap_1_2_rmin1"     value="nose_vacuum_gap_1_2_rmax1 - cryo_vacuum_gap_1_thck+4*mm"/>
+        <constant name="nose_vacuum_gap_1_2_rmin2"     value="nose_vacuum_gap_1_2_rmax2 - cryo_vacuum_gap_1_thck"/>
+        <constant name="nose_thermal_shield_2_rmax1"   value="nose_vacuum_gap_1_2_rmin1"/>
+        <constant name="nose_thermal_shield_2_rmax2"   value="nose_vacuum_gap_1_2_rmin2"/>
+        <constant name="nose_thermal_shield_2_rmin1"   value="nose_thermal_shield_2_rmax1 - cryo_thermal_shield_thck+2*mm"/>
+        <constant name="nose_thermal_shield_2_rmin2"   value="nose_thermal_shield_2_rmax2 - cryo_thermal_shield_thck"/>
+        <constant name="nose_vacuum_gap_2_2_rmax1"     value="nose_thermal_shield_2_rmin1"/>
+        <constant name="nose_vacuum_gap_2_2_rmax2"     value="nose_thermal_shield_2_rmin2"/>
+        <constant name="nose_vacuum_gap_2_2_rmin1"     value="nose_vacuum_gap_2_2_rmax1 - cryo_vacuum_gap_2_thck+4*mm"/>
+        <constant name="nose_vacuum_gap_2_2_rmin2"     value="nose_vacuum_gap_2_2_rmax2 - cryo_vacuum_gap_2_thck"/>
+	
+	<constant name="nose_vacuum_vessel_rmax1"    value="cryo_nose_out_r1"/>
+	<constant name="nose_vacuum_vessel_rmax2"    value="cryo_nose_out_r2"/>
+	<constant name="nose_vacuum_vessel_rmin1"    value="nose_vacuum_vessel_rmax1 - cryo_vacuum_vessel_thck"/>
+        <constant name="nose_vacuum_vessel_rmin2"    value="nose_vacuum_vessel_rmax2 - cryo_vacuum_vessel_thck"/>
+	<constant name="nose_vacuum_gap_1_rmax1"     value="nose_vacuum_vessel_rmin1"/>
+        <constant name="nose_vacuum_gap_1_rmax2"     value="nose_vacuum_vessel_rmin2"/>
+        <constant name="nose_vacuum_gap_1_rmin1"     value="nose_vacuum_gap_1_rmax1 - cryo_vacuum_gap_1_thck+4*mm"/>
+        <constant name="nose_vacuum_gap_1_rmin2"     value="nose_vacuum_gap_1_rmax2 - cryo_vacuum_gap_1_thck+4*mm"/>
+        <constant name="nose_thermal_shield_rmax1"   value="nose_vacuum_gap_1_rmin1"/>
+	<constant name="nose_thermal_shield_rmax2"   value="nose_vacuum_gap_1_rmin2"/>
+	<constant name="nose_thermal_shield_rmin1"   value="nose_thermal_shield_rmax1 - cryo_thermal_shield_thck+2*mm"/>
+	<constant name="nose_thermal_shield_rmin2"   value="nose_thermal_shield_rmax2 - cryo_thermal_shield_thck+2*mm"/>
+        <constant name="nose_vacuum_gap_2_rmax1"     value="nose_thermal_shield_rmin1"/>
+	<constant name="nose_vacuum_gap_2_rmax2"     value="nose_thermal_shield_rmin2"/>
+	<constant name="nose_vacuum_gap_2_rmin1"     value="nose_vacuum_gap_2_rmax1 - cryo_vacuum_gap_2_thck+4*mm"/>
+	<constant name="nose_vacuum_gap_2_rmin2"     value="nose_vacuum_gap_2_rmax2 - cryo_vacuum_gap_2_thck+4*mm"/>
+        <constant name="nose_helium_vessel_rmax1"     value="nose_vacuum_gap_2_rmin1"/>
+        <constant name="nose_helium_vessel_rmax2"     value="nose_vacuum_gap_2_rmin2"/>
+        <constant name="nose_helium_vessel_rmin1"     value="nose_helium_vessel_rmax1 - cryo_helium_vessel_thck"/>
+        <constant name="nose_helium_vessel_rmin2"     value="nose_helium_vessel_rmax2 - cryo_helium_vessel_thck"/>
+	<constant name="nose_helium_sol_rmax1"     value="nose_helium_vessel_rmin1"/>
+	<constant name="nose_helium_sol_rmax2"     value="nose_helium_vessel_rmin2"/>
+	<constant name="nose_helium_sol_rmin1"     value="nose_helium_sol_rmax1 - cryo_helium_sol_thck"/>
+	<constant name="nose_helium_sol_rmin2"     value="nose_helium_sol_rmax2 - cryo_helium_sol_thck"/>
+        <constant name="nose_solenoid_rmax1"     value="nose_helium_sol_rmin1"/>
+        <constant name="nose_solenoid_rmax2"     value="nose_helium_sol_rmin2"/>
+        <constant name="nose_solenoid_rmin1"     value="nose_solenoid_rmax1 - cryo_solenoid_thck"/>
+        <constant name="nose_solenoid_rmin2"     value="nose_solenoid_rmax2 - cryo_solenoid_thck"/>
+        <constant name="nose_coil_support_rmax1"     value="nose_solenoid_rmin1"/>
+        <constant name="nose_coil_support_rmax2"     value="nose_solenoid_rmin2"/>
+        <constant name="nose_coil_support_rmin1"     value="(96-36+21)*mm"/>
+        <constant name="nose_coil_support_rmin2"     value="nose_coil_support_rmax2 - cryo_coil_support_thck1"/>
+        <constant name="nose_tungsten_rmax1"     value="nose_coil_support_rmin1"/>
+        <constant name="nose_tungsten_rmax2"     value="nose_coil_support_rmin2"/>
+        <constant name="nose_tungsten_rmin1"     value="nose_tungsten_rmax1 - cryo_tungsten_thck"/>
+        <constant name="nose_tungsten_rmin2"     value="nose_tungsten_rmax2 - cryo_tungsten_thck"/>
+        <constant name="nose_filler_rmax1"     value="nose_tungsten_rmin1"/>
+        <constant name="nose_filler_rmax2"     value="nose_tungsten_rmin2"/>
+        <constant name="nose_filler_rmin1"     value="27*mm"/>
+        <constant name="nose_filler_rmin2"     value="27*mm"/>
+
+	<constant name="tip_helium_vessel_min_z"     value="cryo_nose_min_z-3*mm"/>
+	<constant name="tip_vacuum_min_z"            value="tip_helium_vessel_min_z-6*mm"/>
+	<constant name="tip_vacuum_vessel_min_z"     value="tip_vacuum_min_z-3*mm"/>
+
+	<constant name="tip_helium_vessel_rmin"     value="50*mm"/>
+	<constant name="tip_vacuum_rmin"            value="50*mm"/>
+	<constant name="tip_vacuum_vessel_rmin"     value="50*mm"/>
+
+	<constant name="tip_helium_vessel_rmax"     value="cryo_nose_out_r1"/>
+        <constant name="tip_vacuum_rmax"            value="cryo_nose_out_r1"/>
+        <constant name="tip_vacuum_vessel_rmax"     value="cryo_nose_out_r1"/>
+	
+	<!-- LumiCal -->
+        <!-- _prime marks the coordinate system along the beamline instead of the detector coordinate frame -->
+        <constant name="LumiCal_min_z_prime" value="1074*mm"/>
+        <constant name="LumiCal_dz_prime" value="0.5 * 25 * 4.5 * mm"/> <!-- Must be consistent with layers defined in the lumiCal xml, half-length-->
+	<constant name="LumiCal_max_z_prime" value="LumiCal_min_z_prime + LumiCal_dz_prime * 2" />
+	
+        <!-- calculate the Z position in the detector reference frame for consistency with existing drivers -->
+        <constant name="LumiCal_min_z" value="LumiCal_min_z_prime*cos(0.5*CrossingAngle)"/>
+	<constant name="LumiCal_max_z" value="LumiCal_max_z_prime*cos(0.5*CrossingAngle)" />
+	
+        <!-- This has nothing to do with the actual length of the LumiCal, the value is only used for the positioning -->
+        <constant name="LumiCal_dz" value="LumiCal_dz_prime * cos(0.5 * CrossingAngle)"/>
+        
+        <constant name="LumiCal_inner_radius" value="55.0*mm"/>
+        <constant name="LumiCal_outer_radius" value="115.0*mm- env_safety"/>
+
+	<constant name="LumiCal_Instr_thickness" value="20*mm"/>
+	<constant name="LumiCal_Instr_inner_radius" value="LumiCal_outer_radius"/>
+	<constant name="LumiCal_Instr_outer_radius" value="LumiCal_outer_radius+LumiCal_Instr_thickness - env_safety"/>
+
+	<constant name="LumiCal_Cool_thickness" value="9.75*mm"/>
+	<constant name="LumiCal_Cool_inner_radius" value="LumiCal_Instr_outer_radius"/>
+	<constant name="LumiCal_Cool_outer_radius" value="LumiCal_Instr_outer_radius+LumiCal_Cool_thickness"/>
+
+        <constant name="Lcal_services_rmax" value="LumiCal_outer_radius+30*mm"/>
+        <constant name="Lcal_offset_phi" value=" 0."/>
+        <!--preliminary LumiCal shielding-->
+        <!--back shielding-->
+        <constant name="LumiCal_Shield_inner_radius" value="LumiCal_inner_radius"/>
+        <constant name="LumiCal_Shield_outer_radius" value="LumiCal_outer_radius+LumiCal_Instr_thickness+LumiCal_Cool_thickness"/>
+        <!-- For convenience, z here refers to dimensions *along the beam pipe*, which is tilted by CrossingAngle/2 w.r.t the global z axis -->
+	<constant name="LumiCal_shield_dz_prime" value="3.5/2.0*mm"/> <!-- Must be consistent with layers defined in the lumiCal xml (1*3.5 mm)-->
+        <constant name="LumiCal_shield_dz" value="LumiCal_shield_dz_prime  * cos(0.5 * CrossingAngle)"/>
+	
+    </define>
+
+</lccdd>
