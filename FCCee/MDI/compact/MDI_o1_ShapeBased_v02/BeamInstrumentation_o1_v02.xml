@@ -1,0 +1,197 @@
+<lccdd>
+
+  <!-- see A. Ciarma https://indico.cern.ch/event/1679641/ -->
+    
+    <detectors>
+        <comment>Antisolenoids Cryostat</comment>
+
+	<detector name="cylindrical-part" type="DD4hep_Mask_o1_v01" insideTrackingVolume="true" vis="ScreenSolVis">
+            <parameter crossingangle="CrossingAngle" />
+            <envelope vis="CoilVis">
+                <shape type="Assembly"/>
+            </envelope>
+
+	    <section type="Center"    start="2250*mm"    end="cryo_max_z"
+                     rMin1="cryo_vacuum_vessel_rmin"  rMin2="cryo_vacuum_vessel_rmin"
+		     rMax1="cryo_vacuum_vessel_rmax" rMax2="cryo_vacuum_vessel_rmax"
+                     material="Steel235"  name="vacuum_vessel" />
+
+	    <section type="Center"    start="2250*mm"    end="cryo_max_z"
+                     rMin1="cryo_vacuum_gap_1_rmin"  rMin2="cryo_vacuum_gap_1_rmin"
+                     rMax1="cryo_vacuum_gap_1_rmax" rMax2="cryo_vacuum_gap_1_rmax"
+                     material="Vacuum"  name="vacuum_gap_1" />
+
+	    <section type="Center"    start="2250*mm"    end="cryo_max_z"
+                     rMin1="cryo_thermal_shield_rmin"  rMin2="cryo_thermal_shield_rmin"
+                     rMax1="cryo_thermal_shield_rmax" rMax2="cryo_thermal_shield_rmax"
+                     material="Al"  name="thermal_shield" />
+
+	    <section type="Center"    start="2250*mm"    end="cryo_max_z"
+                     rMin1="cryo_vacuum_gap_2_rmin"  rMin2="cryo_vacuum_gap_2_rmin"
+	             rMax1="cryo_vacuum_gap_2_rmax" rMax2="cryo_vacuum_gap_2_rmax"
+                     material="Vacuum"  name="vacuum_gap_2" />
+
+	    <section type="Center"    start="cryo_min_z"    end="cryo_max_z"
+                     rMin1="cryo_helium_vessel_rmin"  rMin2="cryo_helium_vessel_rmin"
+	             rMax1="cryo_helium_vessel_rmax" rMax2="cryo_helium_vessel_rmax"
+                     material="Steel235"  name="helium_vessel" />
+
+	    <section type="Center"    start="cryo_min_z"    end="cryo_max_z"
+                     rMin1="cryo_helium_sol_rmin"  rMin2="cryo_helium_sol_rmin"
+                     rMax1="cryo_helium_sol_rmax"  rMax2="cryo_helium_sol_rmax"
+                     material="He"  name="helium_sol" />
+
+	    <section type="Center"    start="cryo_min_z"    end="cryo_max_z"
+                     rMin1="cryo_solenoid_rmin"  rMin2="cryo_solenoid_rmin"
+                     rMax1="cryo_solenoid_rmax"  rMax2="cryo_solenoid_rmax"
+                     material="SolenoidMixture"  name="solenoid" />
+
+	    <section type="Center"    start="cryo_min_z"    end="cryo_max_z"
+                     rMin1="cryo_coil_support_rmin1"  rMin2="cryo_coil_support_rmin2"
+                     rMax1="cryo_coil_support_rmax"  rMax2="cryo_coil_support_rmax"
+                     material="Steel235"  name="coil_support" />
+
+	    <section type="Center"    start="cryo_min_z"    end="cryo_max_z"
+                     rMin1="cryo_tungsten_rmin1"  rMin2="cryo_tungsten_rmin2"
+                     rMax1="cryo_tungsten_rmax1"  rMax2="cryo_tungsten_rmax2"
+                     material="W"  name="tungsten" />
+
+	    <section type="PunchedCenter"        start="cryo_min_z" end="cryo_max_z"
+                     rMin1="cryo_filler_rmin"      rMin2="cryo_filler_rmin"
+                     rMax1="cryo_filler_rmax1" rMax2="cryo_filler_rmax2"
+                     material="Al"     name="cryo_infill"/>   
+	    
+	    <section type="Upstream"    start="2400*mm"    end="cryo_max_z"
+                     rMin1="cryo_helium_ffq_rmin"  rMin2="cryo_helium_ffq_rmin"
+                     rMax1="cryo_helium_ffq_rmax"  rMax2="cryo_helium_ffq_rmax"
+                     material="He"  name="helium_ffq_up" />
+	    
+	    <section type="Dnstream"    start="2400*mm"    end="cryo_max_z"
+                     rMin1="cryo_helium_ffq_rmin"  rMin2="cryo_helium_ffq_rmin"
+                     rMax1="cryo_helium_ffq_rmax"  rMax2="cryo_helium_ffq_rmax"
+                     material="He"  name="helium_ffq_dn" />
+
+	    <section type="Upstream"    start="1500*mm"    end="cryo_max_z"
+                     rMin1="cryo_support_ffq_rmin"  rMin2="cryo_support_ffq_rmin"
+                     rMax1="cryo_support_ffq_rmax"  rMax2="cryo_support_ffq_rmax"
+                     material="Steel235"  name="support_ffq_up" />
+	    
+            <section type="Dnstream"    start="1500*mm"    end="cryo_max_z"
+                     rMin1="cryo_support_ffq_rmin"  rMin2="cryo_support_ffq_rmin"
+                     rMax1="cryo_support_ffq_rmax"  rMax2="cryo_support_ffq_rmax"
+                     material="Steel235"  name="support_ffq_dn" />
+
+	    <section type="Upstream"    start="1500*mm"    end="cryo_max_z"
+                     rMin1="cryo_vacuum_ffq_rmin"  rMin2="cryo_vacuum_ffq_rmin"
+                     rMax1="cryo_vacuum_ffq_rmax"  rMax2="cryo_vacuum_ffq_rmax"
+                     material="Vacuum"  name="vacuum_ffq_up" />
+
+            <section type="Dnstream"    start="1500*mm"    end="cryo_max_z"
+                     rMin1="cryo_vacuum_ffq_rmin"  rMin2="cryo_vacuum_ffq_rmin"
+                     rMax1="cryo_vacuum_ffq_rmax"  rMax2="cryo_vacuum_ffq_rmax"
+                     material="Vacuum"  name="vacuum_ffq_dn" />
+
+	    <section type="Upstream"    start="1500*mm"    end="cryo_max_z"
+                     rMin1="cryo_vessel_ffq_rmin"  rMin2="cryo_vessel_ffq_rmin"
+                     rMax1="cryo_vessel_ffq_rmax"  rMax2="cryo_vessel_ffq_rmax"
+                     material="Steel235"  name="vessel_ffq_up" />
+
+            <section type="Dnstream"    start="1500*mm"    end="cryo_max_z"
+                     rMin1="cryo_vessel_ffq_rmin"  rMin2="cryo_vessel_ffq_rmin"
+                     rMax1="cryo_vessel_ffq_rmax"  rMax2="cryo_vessel_ffq_rmax"
+                     material="Steel235"  name="vessel_ffq_dn" />
+
+	    <section type="Upstream"    start="2400*mm"    end="cryo_max_z"
+                     rMin1="cryo_tungsten_ffq_rmin"  rMin2="cryo_tungsten_ffq_rmin"
+                     rMax1="cryo_tungsten_ffq_rmax"  rMax2="cryo_tungsten_ffq_rmax"
+                     material="W"  name="tungsten_ffq_up" />
+
+            <section type="Dnstream"    start="2400*mm"    end="cryo_max_z"
+                     rMin1="cryo_tungsten_ffq_rmin"  rMin2="cryo_tungsten_ffq_rmin"
+                     rMax1="cryo_tungsten_ffq_rmax"  rMax2="cryo_tungsten_ffq_rmax"
+                     material="W"  name="tungsten_ffq_dn" />
+	    
+	    <section type="PunchedCenter"        start="cryo_min_z" end="2400*mm"
+                     rMin1="cryo_filler_ffq_rmin"      rMin2="cryo_filler_ffq_rmin"
+                     rMax1="cryo_filler_ffq_rmax1" rMax2="cryo_filler_ffq_rmax2"
+                     material="Al"     name="cryo_infill_ffq"/>  
+
+
+	    <section type="Center"    start="cryo_min_z"    end="2250*mm"
+                     rMin1="nose_vacuum_vessel_2_rmin1"  rMin2="nose_vacuum_vessel_2_rmin2"
+                     rMax1="nose_vacuum_vessel_2_rmax1"  rMax2="nose_vacuum_vessel_2_rmax2"
+                     material="Steel235"  name="nose_vacuum_vessel_2" />
+            <section type="Center"    start="cryo_min_z"    end="2250*mm"
+                     rMin1="nose_vacuum_gap_1_2_rmin1"  rMin2="nose_vacuum_gap_1_2_rmin2"
+                     rMax1="nose_vacuum_gap_1_2_rmax1"  rMax2="nose_vacuum_gap_1_2_rmax2"
+                     material="Vacuum"  name="nose_vacuum_gap_1_2" />
+            <section type="Center"    start="cryo_min_z"    end="2250*mm"
+                     rMin1="nose_thermal_shield_2_rmin1"  rMin2="nose_thermal_shield_2_rmin2"
+                     rMax1="nose_thermal_shield_2_rmax1"  rMax2="nose_thermal_shield_2_rmax2"
+                     material="Al"  name="nose_thermal_shield_2" />
+            <section type="Center"    start="cryo_min_z"    end="2250*mm"
+                     rMin1="nose_vacuum_gap_2_2_rmin1"  rMin2="nose_vacuum_gap_2_2_rmin2"
+                     rMax1="nose_vacuum_gap_2_2_rmax1"  rMax2="nose_vacuum_gap_2_2_rmax2"
+                     material="Vacuum"  name="nose_vacuum_gap_2_2" />
+
+	    <section type="Center"    start="cryo_nose_min_z"    end="cryo_min_z"
+                     rMin1="nose_vacuum_vessel_rmin1"  rMin2="nose_vacuum_vessel_rmin2"
+                     rMax1="nose_vacuum_vessel_rmax1"  rMax2="nose_vacuum_vessel_rmax2"
+                     material="Steel235"  name="nose_vacuum_vessel" />
+	    <section type="Center"    start="cryo_nose_min_z"    end="cryo_min_z"
+                     rMin1="nose_vacuum_gap_1_rmin1"  rMin2="nose_vacuum_gap_1_rmin2"
+                     rMax1="nose_vacuum_gap_1_rmax1"  rMax2="nose_vacuum_gap_1_rmax2"
+                     material="Vacuum"  name="nose_vacuum_gap_1" />
+            <section type="Center"    start="cryo_nose_min_z"    end="cryo_min_z"
+                     rMin1="nose_thermal_shield_rmin1"  rMin2="nose_thermal_shield_rmin2"
+                     rMax1="nose_thermal_shield_rmax1"  rMax2="nose_thermal_shield_rmax2"
+                     material="Al"  name="nose_thermal_shield" />
+            <section type="Center"    start="cryo_nose_min_z"    end="cryo_min_z"
+                     rMin1="nose_vacuum_gap_2_rmin1"  rMin2="nose_vacuum_gap_2_rmin2"
+                     rMax1="nose_vacuum_gap_2_rmax1"  rMax2="nose_vacuum_gap_2_rmax2"
+                     material="Vacuum"  name="nose_vacuum_gap_2" />
+	    <section type="Center"    start="cryo_nose_min_z"    end="cryo_min_z"
+                     rMin1="nose_helium_vessel_rmin1"  rMin2="nose_helium_vessel_rmin2"
+                     rMax1="nose_helium_vessel_rmax1"  rMax2="nose_helium_vessel_rmax2"
+                     material="Steel235"  name="nose_helium_vessel" />
+            <section type="Center"    start="cryo_nose_min_z"    end="cryo_min_z"
+                     rMin1="nose_helium_sol_rmin1"  rMin2="nose_helium_sol_rmin2"
+                     rMax1="nose_helium_sol_rmax1"  rMax2="nose_helium_sol_rmax2"
+                     material="He"  name="nose_helium_sol" />
+	    <section type="Center"    start="cryo_nose_min_z"    end="cryo_min_z"
+                     rMin1="nose_solenoid_rmin1"  rMin2="nose_solenoid_rmin2"
+                     rMax1="nose_solenoid_rmax1"  rMax2="nose_solenoid_rmax2"
+                     material="SolenoidMixture"  name="nose_solenoid" />
+	    <section type="Center"    start="cryo_nose_min_z"    end="cryo_min_z"
+                     rMin1="nose_coil_support_rmin1"  rMin2="nose_coil_support_rmin2"
+                     rMax1="nose_coil_support_rmax1"  rMax2="nose_coil_support_rmax2"
+                     material="Steel235"  name="nose_coil_support" />
+            <section type="Center"    start="cryo_nose_min_z"    end="cryo_min_z"
+                     rMin1="nose_tungsten_rmin1"  rMin2="nose_tungsten_rmin2"
+                     rMax1="nose_tungsten_rmax1"  rMax2="nose_tungsten_rmax2"
+                     material="W"  name="nose_tungsten" />
+	    
+            <section type="PunchedCenter"    start="cryo_nose_min_z"    end="cryo_min_z"
+                     rMin1="nose_filler_rmin1"  rMin2="nose_filler_rmin2"
+                     rMax1="nose_filler_rmax1"  rMax2="nose_filler_rmax2"
+                     material="Al"  name="nose_infill" />
+
+	    
+	    <section type="Center"    start="tip_helium_vessel_min_z"    end="cryo_nose_min_z"
+                     rMin1="tip_helium_vessel_rmin"  rMin2="tip_helium_vessel_rmin"
+                     rMax1="tip_helium_vessel_rmax"  rMax2="tip_helium_vessel_rmax"
+                     material="Steel235"  name="tip_helium_vessel" />
+	    <section type="Center"    start="tip_vacuum_min_z"    end="tip_helium_vessel_min_z"
+                     rMin1="tip_vacuum_rmin"  rMin2="tip_vacuum_rmin"
+                     rMax1="tip_vacuum_rmax"  rMax2="tip_vacuum_rmax"
+                     material="Vacuum"  name="tip_vacuum" />
+	    <section type="Center"    start="tip_vacuum_vessel_min_z"    end="tip_vacuum_min_z"
+                     rMin1="tip_vacuum_vessel_rmin"  rMin2="tip_vacuum_vessel_rmin"
+                     rMax1="tip_vacuum_vessel_rmax"  rMax2="tip_vacuum_vessel_rmax"
+                     material="Steel235"  name="tip_vacuum_vessel" />
+	    
+	  </detector>
+
+	  
+    </detectors>
+</lccdd>
