@@ -203,11 +203,11 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
           double phi_offset = getAttrOrDefault(component, _Unicode(phi_offset), double(0.0));
           Tube ele_box =
               Tube(rmin, rmin + thickness, components.length, -half_width + phi_offset, half_width + phi_offset);
-          ele_vol = Volume(component.nameStr("vol") + _toString(iComponent, "_%d"), ele_box,
+          ele_vol = Volume(components.name + _toString(iComponent, "_%d"), ele_box,
                            theDetector.material(component.materialStr()));
         } else {
           Box ele_box = Box(thickness / 2., component.width() / 2., components.length);
-          ele_vol = Volume(component.nameStr("vol") + _toString(iComponent, "_%d"), ele_box,
+          ele_vol = Volume(components.name + _toString(iComponent, "_%d"), ele_box,
                            theDetector.material(component.materialStr()));
         }
         ele_vol.setAttributes(theDetector, x_det.regionStr(), x_det.limitsStr(), component.visStr());
@@ -254,7 +254,7 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
           double phi_offset = getAttrOrDefault(component, _Unicode(phi_offset), double(0.0));
           Tube ele_box =
               Tube(rmin, rmin + thickness, component.length() / 2., -half_width + phi_offset, half_width + phi_offset);
-          ele_vol = Volume(component.nameStr("vol") + _toString(iEndOfStave, "_%d"), ele_box,
+          ele_vol = Volume(endOfStave.name + _toString(iEndOfStave, "_%d"), ele_box,
                            theDetector.material(component.materialStr()));
         } else {
           Box ele_box = Box(thickness / 2., component.width() / 2., component.length() / 2.);
@@ -509,7 +509,7 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
 
       // Place components
       for (auto& component : m.components_vec) {
-        Assembly component_assembly(component.name);
+        Assembly component_assembly(stave_name + "_" + component.name);
         if (m.motherVolThickness > 0.0 && m.motherVolWidth > 0.0)
           pv = whole_stave_volume_v.placeVolume(component_assembly, Position(-m.motherVolThickness / 2., 0., 0.));
         else
@@ -539,7 +539,7 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
 
       // Place end of stave structures
       for (auto& endOfStave : m.endOfStaves_vec) {
-        Assembly endOfStave_assembly(endOfStave.name);
+        Assembly endOfStave_assembly(stave_name + "_" + endOfStave.name);
         if (m.motherVolThickness > 0.0 && m.motherVolWidth > 0.0)
           pv = whole_stave_volume_v.placeVolume(endOfStave_assembly, Position(-m.motherVolThickness / 2., 0., 0.));
         else
@@ -584,7 +584,7 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
                   iModule * sensor.length + iModule * step;
           Position pos(x_pos, y_pos, z_pos);
 
-          string module_name = _toString(iModule, "module%d");
+          string module_name = stave_name + _toString(iModule, "_module%d");
           Assembly module_assembly(module_name);
           if (m.motherVolThickness > 0.0 && m.motherVolWidth > 0.0)
             pv = whole_stave_volume_v.placeVolume(module_assembly, Position(-m.motherVolThickness / 2., 0., 0.));
@@ -592,7 +592,7 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
             pv = whole_stave_volume_a.placeVolume(module_assembly);
           pv.addPhysVolID("module", iModule + nmodules * iStave);
 
-          DetElement moduleDE(layerDE, stave_name + "_" + module_name, iModule + nmodules * iStave);
+          DetElement moduleDE(layerDE, module_name, iModule + nmodules * iStave);
           moduleDE.setPlacement(pv);
 
           // Place all sensor parts
