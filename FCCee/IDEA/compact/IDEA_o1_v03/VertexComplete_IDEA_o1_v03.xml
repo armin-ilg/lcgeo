@@ -1764,7 +1764,7 @@
 
 
         <!-- Vertex disks  -->
-        <detector id="DetID_VXD_Disks" name="VertexDisks" vis="VXDVis" type="VertexEndcap_detailed_o1_v02" readout="VertexEndcapCollection" reflect="true" region="VertexEndcapRegion">
+        <detector id="DetID_VXD_Endcap" name="VertexDisks" vis="VXDVis" type="VertexEndcap_detailed_o1_v02" readout="VertexEndcapCollection" reflect="true" region="VertexEndcapRegion">
             <envelope vis="VXDVis">
                 <shape type="Assembly"/>
             </envelope>

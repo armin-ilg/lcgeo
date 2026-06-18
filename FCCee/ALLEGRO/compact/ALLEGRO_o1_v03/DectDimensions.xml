@@ -23,7 +23,7 @@
     <constant name="DetID_NOTUSED"                value=" 0"/>
 
     <constant name="DetID_VXD_Barrel"             value=" 1"/>
-    <constant name="DetID_VXD_Disks"              value=" 2"/>
+    <constant name="DetID_VXD_Endcap"             value=" 2"/>
 
     <constant name="DetID_DCH"                    value=" 3"/>
 
