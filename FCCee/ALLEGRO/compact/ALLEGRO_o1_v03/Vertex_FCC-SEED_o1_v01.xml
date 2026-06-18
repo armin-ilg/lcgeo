@@ -288,7 +288,7 @@
         </detector>
 
         <comment> Inner vertex detector made of overlapping, curved sensors </comment>
-        <detector name="VertexBarrel" type="VertexBarrel_detailed_o1_v03" vis="VXDVis" id="DetID_VXD_Barrel" readout="VertexBarrelCollection"  region="VTXBRegion">
+        <detector name="VertexBarrel" type="VertexBarrel_detailed_o1_v03" vis="VXDVis" id="DetID_VXD_Barrel" readout="VertexBarrelCollection"  region="VertexBarrelRegion">
             <envelope vis="VXDVis">
                 <shape type="Assembly"/>
             </envelope>
@@ -455,7 +455,7 @@
 
 
         <comment> Kapton layer on top of beam pipe before first layer </comment>
-        <detector name="Kapton_on_beampipe" type="VertexBarrel_detailed_o1_v03" vis="KaptonVis" id="-2" readout="VertexDummyCollection" region="VTXBRegion">
+        <detector name="Kapton_on_beampipe" type="VertexBarrel_detailed_o1_v03" vis="KaptonVis" id="-2" readout="VertexDummyCollection" region="VertexBarrelRegion">
             <envelope vis="KaptonVis">
                 <shape type="Assembly"/>
             </envelope>
@@ -470,7 +470,7 @@
         </detector>
 
         <comment> Inner vertex tube just outside last inner vertex layer </comment>
-        <detector name="VertexInnerBarrel_tube" type="VertexBarrel_detailed_o1_v03" vis="VTXIBTubeVis" id="-3" readout="VertexDummyCollection" region="VTXBRegion">
+        <detector name="VertexInnerBarrel_tube" type="VertexBarrel_detailed_o1_v03" vis="VTXIBTubeVis" id="-3" readout="VertexDummyCollection" region="VertexBarrelRegion">
             <envelope vis="VTXIBTubeVis">
                 <shape type="Assembly"/>
             </envelope>
@@ -487,7 +487,7 @@
 
 
 
-        <detector id="DetID_VXD_Disks" name="VertexEndcap" type="VertexEndcap_o1_v06" readout="VertexEndcapCollection" reflect="true" region="VTXDRegion">
+        <detector id="DetID_VXD_Disks" name="VertexEndcap" type="VertexEndcap_o1_v06" readout="VertexEndcapCollection" reflect="true" region="VertexEndcapRegion">
             <envelope vis="VXDVis">
                 <shape type="Assembly"/>
             </envelope>
@@ -621,7 +621,7 @@
                 <ring r="(VTXD_rmax + VTXD_singleHit_rmin6) / 2" zstart="VTXD_singleHit_z6" nmodules="(int) VTXD_nModules" dz="0*cm" phi0="pi/(VTXD_nModules)" module="SiVertexEndcapModule6"/>
             </layer>
     </detector>
-        <detector name="VertexVerticalCable" type="TrackerEndcapSupport_o1_v02" reflect="true"  region="VTXDRegion">
+        <detector name="VertexVerticalCable" type="TrackerEndcapSupport_o1_v02" reflect="true"  region="VertexEndcapRegion">
 	    <envelope>
 		    <shape type="Assembly"/>
 	    </envelope>
