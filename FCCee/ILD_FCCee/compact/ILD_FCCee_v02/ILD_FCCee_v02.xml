@@ -73,15 +73,10 @@
   <include ref="../../../CLD/compact/CLD_o2_v07/LumiCal_o3_v02_05.xml"/>
 
   <!-- Vertex from CLD_o2_v07 -->
-
-  <!-- <include ref="../../../CLD/compact/CLD_o2_v07/Vertex_o4_v07_smallBP.xml"/> -->
+  <include ref="../../../CLD/compact/CLD_o2_v07/Vertex_o4_v07_smallBP.xml"/>
   
   <!-- or using FCC-SEED barrel + CLD endcaps -->
-  <define>
-    <constant name="DetID_VXD_Barrel" value="DetID_VXD_Barrel"/>
-    <constant name="DetID_VXD_Disks"  value="DetID_VXD_Endcap"/>
-  </define>
-  <include ref="../../../ALLEGRO/compact/ALLEGRO_o1_v03/Vertex_FCC-SEED_o1_v01.xml"/>
+  <!-- <include ref="../ILD_common_FCCee/Vertex_FCC-SEED_o1_v01.xml"/> -->
 
   <!-- Inner tracker from CLD -->
   <include ref="../../../CLD/compact/CLD_o2_v07/InnerTracker_o2_v08.xml"/>
