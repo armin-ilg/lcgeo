@@ -73,13 +73,8 @@
         <constant name="VertexEndcap_rmin1" value="24*mm"/>
         <constant name="VertexEndcap_rmin2" value="34.5*mm"/>
         <constant name="VertexEndcap_rmin3" value="45*mm"/>
-        <constant name="VertexEndcapModuleThickness" value="1.22*mm"/>
+        <constant name="VertexEndcapModuleThickness" value="2.*VertexEndcap_Sensitive_Thickness+2.*VertexEndcap_Support_Thickness+VertexEndcap_DoubleLayer_Gap"/>
         <constant name="VertexEndcapOverlap" value="0*mm"/>
-
-        <comment> Parameters for the inclusion of other xmls </comment>
-        <constant name="VertexVerticalCable_inner_z" value="Vertex_half_length"/>
-        <constant name="VertexVerticalCable_inner_r" value="VTXIB_r_min_layer"/>
-        <constant name="VertexVerticalCable_outer_r" value="Vertex_outer_radius-5.*mm"/>
     </define>
 
     <!--  Definition of the readout segmentation/definition  -->
@@ -182,7 +177,7 @@
             </module>
 
             <layer id="0"  vis="SiVertexLayerVis">
-                <ring r="(VertexEndcap_rmax + VertexEndcap_rmin1) / 2" zstart="VertexEndcap_z1 - VertexEndcapModuleThickness/2.0" nmodules="(int) VertexEndcapModules" dz="0*cm" phi0="pi/(VertexEndcapModules)" module="SiVertexEndcapModule1"/>
+                <ring r="(VertexEndcap_rmax + VertexEndcap_rmin1) / 2" zstart="VertexEndcap_z1-VertexEndcapModuleThickness/2.0" nmodules="(int) VertexEndcapModules" dz="0*cm" phi0="pi/(VertexEndcapModules)" module="SiVertexEndcapModule1"/>
             </layer>
             <layer id="1"  vis="SiVertexLayerVis">
                 <ring r="(VertexEndcap_rmax + VertexEndcap_rmin1) / 2" zstart="VertexEndcap_z1+VertexEndcapModuleThickness/2.0" nmodules="(int) VertexEndcapModules" dz="0*cm" phi0="pi/(VertexEndcapModules)" module="SiVertexEndcapModule2"/>
