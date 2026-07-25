@@ -336,7 +336,7 @@
                 </end_z>
             </stave> 
 
-            <layer nLadders="VTXIB_SEED_staves1" phi0="VTXIB_SEED_phi_offset1" r="VTXIB_SEED_curvature1" id="0" nmodules="VTXIB_SEED_nModules1" name="VTXIB_SEED_Stave1" step="0.0*mm" motherVolRmin="CentralBeamPipe_rmax+BeamPipeWidth+VTXIB_SEED_Kapton_beampipe_thickness" motherVolThickness="VTXIB_SEED_r2-(CentralBeamPipe_rmax+BeamPipeWidth+VTXIB_SEED_Kapton_beampipe_thickness)" motherVolLength="VTXIB_SEED_half_length1*2." z_offset="VTXIB_SEED_zoffset1" offset="VTXIB_SEED_sensor_offset1"/>
+            <layer nLadders="VTXIB_SEED_staves1" phi0="VTXIB_SEED_phi_offset1" r="VTXIB_SEED_curvature1" id="0" nmodules="VTXIB_SEED_nModules1" name="VTXIB_SEED_Stave1" step="0.0*mm" motherVolRmin="VTXIB_SEED_r1" motherVolThickness="VTXIB_SEED_r2-VTXIB_SEED_r1" motherVolLength="VTXIB_SEED_half_length1*2." z_offset="VTXIB_SEED_zoffset1" offset="VTXIB_SEED_sensor_offset1"/>
             <layer nLadders="VTXIB_SEED_staves2" phi0="VTXIB_SEED_phi_offset2" r="VTXIB_SEED_curvature2" id="1" nmodules="VTXIB_SEED_nModules2" name="VTXIB_SEED_Stave2" step="0.0*mm" motherVolRmin="VTXIB_SEED_r2" motherVolThickness="VTXIB_SEED_r3-VTXIB_SEED_r2" motherVolLength="VTXIB_SEED_half_length2*2.+(VTXIB_hybrid_length+0.1*mm)*2." z_offset="VTXIB_SEED_zoffset2" offset="VTXIB_SEED_sensor_offset2"/>
             <layer nLadders="VTXIB_SEED_staves3" phi0="VTXIB_SEED_phi_offset3" r="VTXIB_SEED_curvature3" id="2" nmodules="VTXIB_SEED_nModules3" name="VTXIB_SEED_Stave3" step="0.0*mm" motherVolRmin="VTXIB_SEED_r3" motherVolThickness="VTXIB_SEED_r4-VTXIB_SEED_r3" motherVolLength="VTXIB_SEED_half_length3*2.+(VTXIB_hybrid_length+0.1*mm)*2." z_offset="VTXIB_SEED_zoffset3" offset="VTXIB_SEED_sensor_offset3"/>
             <layer nLadders="VTXIB_SEED_staves4" phi0="VTXIB_SEED_phi_offset4" r="VTXIB_SEED_curvature4" id="3" nmodules="VTXIB_SEED_nModules4" name="VTXIB_SEED_Stave4" step="0.0*mm" motherVolRmin="VTXIB_SEED_r4" motherVolThickness="VTXIB_SEED_r5-VTXIB_SEED_r4" motherVolLength="VTXIB_SEED_half_length4*2.+(VTXIB_hybrid_length+0.1*mm)*2." z_offset="VTXIB_SEED_zoffset4" offset="VTXIB_SEED_sensor_offset4"/>
@@ -348,7 +348,7 @@
             <envelope>
                 <shape type="Assembly"/>
             </envelope>
-            <layer id="1" inner_r="VTXIB_SEED_r2" inner_z="VTXIB_SEED_half_length5+VTXIB_hybrid_length+5.0*mm" outer_r="VTX_r_max-5*env_safety" vis="SiVertexCableVis">
+            <layer id="1" inner_r="VTXIB_SEED_r2" inner_z="VTXIB_SEED_half_length5+VTXIB_hybrid_length+5.0*mm" outer_r="VTXIB_vertical_cable_r_max" vis="SiVertexCableVis">
                 <slice material="Copper" thickness="0.02*mm" />
             </layer>
         </detector>

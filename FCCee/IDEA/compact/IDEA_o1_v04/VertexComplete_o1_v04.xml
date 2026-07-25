@@ -30,50 +30,29 @@
         <vis name="VTXIBTube"  	            alpha="0.8" r="0.25"   	g="0.25"    b="0.2"   showDaughters="true"  visible="true"/>
         <vis name="VTXDiskSupportVis"       alpha="0.2" r="0.2"     g="0.2"     b="0.2"   showDaughters="true"  visible="true"/>
     </display>
-
-    <detectors>
-        <comment> The envelope consists of a tube generally surrounding the vertex barrel and endcap disks, subtracted by a
-            cone describing the upper acceptance of the LumiCal </comment>
-        <detector name="Vertex" type="DD4hep_SubdetectorAssembly" vis="VXDVis">
-            <type_flags type=" DetType_TRACKER + DetType_PIXEL + DetType_VERTEX"/>
-            <shape type="BooleanShape" operation="Subtraction" material="Air">
-                <shape type="BooleanShape" operation="Subtraction" material="Air">
-                    <shape type="Tube" rmin="CentralBeamPipe_rmax+BeamPipeWidth" rmax="VTXOB_r_max_layer+VTXOB_rmax_clearance" dz="VTXD_z_max_total"/>
-                    <shape type="Cone" rmin1="0" rmax1="tan(VertexClearanceTheta)*2000.0*mm" rmin2="0" rmax2="0" z="2000.0*mm/2."/>
-                    <position x="0" y="0" z="-2000.0*mm/2." />
-                </shape>                            
-                <shape type="Cone" rmin1="0" rmax1="0" rmin2="0" rmax2="tan(VertexClearanceTheta)*2000.0*mm" z="2000.0*mm/2."/>
-                <position x="0" y="0" z="2000.0*mm/2." />
-            </shape>
-
-            <comment>Vertex Assembly</comment>
-            <composite name="VertexInnerBarrel"/>
-            <composite name="Kapton_on_beampipe"/>
-            <composite name="VertexInnerBarrel_tube"/>
-            <comment>
-                <composite name="VTXIB_Support_PEEK"/>
-                <composite name="VTXIB_Support_CarbonFiber"/>
-                <composite name="VTXIB_CoolingCones"/>
-            </comment>
-            <composite name="VertexOuterBarrel"/>
-            <composite name="VertexDisks"/>
-            <composite name="VertexDisks_support"/>
-        </detector>
-    </detectors>
     
     <comment> In the following there are three different options for the inner vertex detector, which can be selected by commenting out the other two options. The default is the IDEA inner vertex detector, which has an engineering design featured in the FCC Feasibility Study Report. </comment>
 
     <comment> Option 1: IDEA inner vertex detector based IDEA engineering design (INFN Pisa) using ARCADIA MAPS </comment>
     <include ref="../../../IDEA/compact/IDEA_o1_v04/VertexInnerBarrel_o1_v04.xml"/>
-    <define> <constant name="nInnerVertexLayers" value="3"/> </define>
+    <define> 
+        <constant name="nInnerVertexLayers" value="3"/> 
+        <constant name="VTX_envelope_inner_tube_dz" value="140.9*mm"/>
+    </define>
 
     <comment> Option 2: Ultra-light inner vertex detector using ALICE ITS3-like stitched, curved MAPS </comment>
-    <!-- <include ref="../../../IDEA/compact/IDEA_o1_v04/VertexInnerBarrelUltraLight_o1_v04.xml"/> -->
-    <!-- <define> <constant name="nInnerVertexLayers" value="4"/> </define> -->
+    <!-- <include ref="../../../IDEA/compact/IDEA_o1_v04/VertexInnerBarrelUltraLight_o1_v04.xml"/>
+    <define> 
+        <constant name="nInnerVertexLayers" value="4"/> 
+        <constant name="VTX_envelope_inner_tube_dz" value="23.7*mm/tan(VertexAcceptanceLimit)"/>    
+    </define> -->
 
     <comment> Option 3: FCC-SEED inner vertex detector using curved, overlapping MAPS </comment>
     <!-- <include ref="../../../ILD_FCCee/compact/ILD_common_FCCee/Vertex_FCC-SEED_barrel_o1_v01.xml"/>
-    <define> <constant name="nInnerVertexLayers" value="5"/> </define> -->
+    <define> 
+        <constant name="nInnerVertexLayers" value="5"/> 
+        <constant name="VTX_envelope_inner_tube_dz" value="VTXIB_r_min_layer/tan(VertexAcceptanceLimit)"/>
+    </define> -->
 
     <comment> Vertex inner barrel support structure and cooling cones imported via DDCAD. Disabled because of overlaps within and with Vertex detector </comment>
     <!-- <include ref="../../../IDEA/compact/IDEA_o1_v04/VertexInnerBarrel_CAD_supports_o1_v01.xml"/> -->
@@ -86,6 +65,7 @@
 
     <comment> IDEA outer vertex detector based on IDEA engineering design (INFN Pisa) using ATLASPix3 </comment>
     <include ref="../../../IDEA/compact/IDEA_o1_v04/VertexOuterBarrel_o1_v04.xml"/>
+    <define> <constant name="VertexEnvelopeAcceptanceLimit" value="0.090*rad"/> </define> <comment> Clearance of vertex detector in mrad from IP. !!! Too high currently, lumical acceptance is 107 mrad so consider 110 mrad as limit -> Need to adapt vertex disks!!! </comment>
 
     <comment> IDEA vertex disks based on IDEA engineering design (INFN Pisa) using ATLASPix3 </comment>
     <include ref="../../../IDEA/compact/IDEA_o1_v04/VertexDisks_o1_v04.xml"/>
@@ -98,6 +78,39 @@
             </segmentation>
             <id>${GlobalTrackerReadoutID},x:32:-16,y:-16</id>
         </readout>  
-    </readouts>   
+    </readouts>
 
+    <detectors>
+        <comment> The envelope consists of a tube generally surrounding the vertex barrel and endcap disks, subtracted by a
+            cone describing the upper acceptance of the LumiCal </comment>
+        <detector name="Vertex" type="DD4hep_SubdetectorAssembly" vis="VXDVis">
+            <type_flags type=" DetType_TRACKER + DetType_PIXEL + DetType_VERTEX"/>
+            <shape type="BooleanShape" operation="Subtraction" material="Air">
+                <shape type="BooleanShape" operation="Subtraction" material="Air">
+                    <shape type="BooleanShape" operation="Union" material="Air">
+                        <shape type="Tube" rmin="VTXIB_r_min_layer-VTXIB_SEED_Kapton_beampipe_thickness" rmax="23.7*mm" dz="VTX_envelope_inner_tube_dz"/>
+                        <shape type="Tube" rmin="23.7*mm" rmax="VTXOB_r_max_layer+VTXOB_rmax_clearance" dz="VTXD_z_max_total"/>
+                    </shape>
+                    <shape type="Cone" rmin1="0" rmax1="tan(VertexEnvelopeAcceptanceLimit)*2000.0*mm" rmin2="0" rmax2="0" z="2000.0*mm/2."/>
+                    <position x="0" y="0" z="-2000.0*mm/2." />
+                </shape>
+                <shape type="Cone" rmin1="0" rmax1="0" rmin2="0" rmax2="tan(VertexEnvelopeAcceptanceLimit)*2000.0*mm" z="2000.0*mm/2."/>
+                <position x="0" y="0" z="2000.0*mm/2." />
+            </shape>     
+
+            <comment>Vertex Assembly</comment>
+            <composite name="VertexInnerBarrel"/>
+            <composite name="Kapton_on_beampipe"/>
+            <composite name="VertexInnerBarrel_tube"/>
+            <composite name="VertexVerticalCable"/>
+            <comment>
+                <composite name="VTXIB_Support_PEEK"/>
+                <composite name="VTXIB_Support_CarbonFiber"/>
+                <composite name="VTXIB_CoolingCones"/>
+            </comment>
+            <composite name="VertexOuterBarrel"/>
+            <composite name="VertexDisks"/>
+            <composite name="VertexDisks_support"/>
+        </detector>
+    </detectors>
 </lccdd>

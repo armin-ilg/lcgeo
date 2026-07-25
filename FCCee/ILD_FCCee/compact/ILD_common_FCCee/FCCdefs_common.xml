@@ -61,6 +61,8 @@
   <constant name="VTXOB_rmax_clearance" value="0.0*mm"/>
   <constant name="VTX_r_max" value="Vertex_outer_radius"/>
 
+  <constant name="VTXIB_vertical_cable_r_max" value="VTX_r_max-5*env_safety"/>
+
   <constant name="VTXIB_pitch_z"      value="0.020*mm"/>  <!-- Assume 20x20 µm pitch, DRD3 OCTOPUS-like sensors -->
   <constant name="VTXIB_pitch_phi"    value="0.020*mm"/>
   <constant name="VTXD_pitch_r"       value="0.020*mm"/>  <!-- Assume 20x20 µm pitch, DRD3 OCTOPUS-like sensors -->
