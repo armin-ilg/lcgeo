@@ -114,7 +114,6 @@
         <constant name="VTXIB_Kapton_beampipe_halfLength"   value="VTXIB_curved_z1_passive/2."/>
         <constant name="VTXIB_tube_r"                       value="VTXIB_curved_r_outer-VTXIB_tube_thickness"/>
         <constant name="VTXIB_tube_half_length"             value="(2.*VTXIB_curved_z4_1+2.*VTXIB_curved_z4_2+VTXIB_curved_support_ring_length+VTXIB_curved_gap_z4)/2."/>
-        <constant name="nInnerVertexLayers" value="4"/>
     </define>
 
     <detectors>

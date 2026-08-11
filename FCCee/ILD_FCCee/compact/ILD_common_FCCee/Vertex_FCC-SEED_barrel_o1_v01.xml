@@ -172,7 +172,6 @@
         <constant name="VTXIB_Kapton_beampipe_halfLength"   value="VTXIB_SEED_half_length1"/>
         <constant name="VTXIB_tube_half_length"             value="VTXIB_SEED_half_length5"/>
         <constant name="VertexBarrel_rmax"                  value="VTXIB_tube_r"/>
-        <constant name="nInnerVertexLayers"                 value="5"/>
     </define>
 
     <!-- Inner vertex detector made of overlapping, curved sensors -->

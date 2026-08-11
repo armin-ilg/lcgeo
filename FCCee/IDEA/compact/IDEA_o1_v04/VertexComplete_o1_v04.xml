@@ -63,6 +63,9 @@
     <comment> Inner vertex outer tube, for keeping the air in for air cooling </comment>
     <include ref="../../../IDEA/compact/IDEA_o1_v04/VertexInnerBarrel_support_tube_o1_v01.xml"/>
 
+    <comment> IDEA vertex outer barrel and disks shared properties </comment>
+    <include ref="../../../IDEA/compact/IDEA_o1_v04/VertexOuterBarrel_disks_shared_properties_o1_v01.xml"/>
+
     <comment> IDEA outer vertex detector based on IDEA engineering design (INFN Pisa) using ATLASPix3 </comment>
     <include ref="../../../IDEA/compact/IDEA_o1_v04/VertexOuterBarrel_o1_v04.xml"/>
     <define> <constant name="VertexEnvelopeAcceptanceLimit" value="0.090*rad"/> </define> <comment> Clearance of vertex detector in mrad from IP. !!! Too high currently, lumical acceptance is 107 mrad so consider 110 mrad as limit -> Need to adapt vertex disks!!! </comment>
