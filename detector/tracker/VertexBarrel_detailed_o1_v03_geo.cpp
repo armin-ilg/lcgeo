@@ -260,8 +260,7 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
           double half_width = component.width() / (2. * M_PI * rmin) * (2.0 * M_PI) / 2.;
           endOfStave.phi_offsets.push_back(getAttrOrDefault(component, _Unicode(phi_offset), double(0.0)));
           Tube ele_box = Tube(rmin, rmin + thickness, component.length() / 2.,
-                              -half_width + endOfStave.phi_offsets.back(),
-                              half_width + endOfStave.phi_offsets.back());
+                              -half_width + endOfStave.phi_offsets.back(), half_width + endOfStave.phi_offsets.back());
           ele_vol = Volume(endOfStave.name + _toString(iEndOfStave, "_%d"), ele_box,
                            theDetector.material(component.materialStr()));
         } else {
@@ -608,8 +607,9 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
               x_pos = r_component_curved * cos(phi) - r_offset_component * sin(phi);
               y_pos = r_component_curved * sin(phi) + r_offset_component * cos(phi);
               z_pos = m.stave_length / 2. + endOfStave.lengths[i] / 2. + endOfStave.dzs[i] + endOfStave.z_offset +
-                      endOfStave.z_offsets[i]
-                      + sin(endOfStave.tilts[i]) * endOfStave.thicknesses[i]; // Move slightly in z to avoid collision of tilted end-of-stave volume with stave
+                      endOfStave.z_offsets[i] +
+                      sin(endOfStave.tilts[i]) * endOfStave.thicknesses[i]; // Move slightly in z to avoid collision of
+                                                                            // tilted end-of-stave volume with stave
               Position pos = Position(x_pos, y_pos, z_pos * endOfStave_side + motherVolOffset);
               endOfStave_assembly.placeVolume(endOfStave.volumes[i], Transform3D(rot, stave_pos).Inverse() *
                                                                          Transform3D(rot, pos) * transform_tilt);
@@ -625,8 +625,9 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
               x_pos = endOfStave.r + endOfStave.rs[i] + endOfStave.thicknesses[i] / 2.;
               y_pos = endOfStave.offset + endOfStave.offsets[i];
               z_pos = m.stave_length / 2. + endOfStave.lengths[i] / 2. + endOfStave.dzs[i] + endOfStave.z_offset +
-                      endOfStave.z_offsets[i]
-                      + sin(endOfStave.tilts[i]) * endOfStave.thicknesses[i]; // Move slightly in z to avoid collision of tilted end-of-stave volume with stave
+                      endOfStave.z_offsets[i] +
+                      sin(endOfStave.tilts[i]) * endOfStave.thicknesses[i]; // Move slightly in z to avoid collision of
+                                                                            // tilted end-of-stave volume with stave
               Position pos(x_pos, y_pos, z_pos * endOfStave_side + motherVolOffset);
               endOfStave_assembly.placeVolume(endOfStave.volumes[i], Transform3D(pos) * transform_tilt);
             }
