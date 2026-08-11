@@ -80,7 +80,6 @@
     <constant name="env_safety" value="0.1*mm"/>
 
     <!-- Vertex detector as in the engineering design (INFN Pisa) Changing the values here generally is not enough to resize the detector, except for the first layer radius. Contact in case of questions or desired adaptations: Armin Ilg -->
-    <constant name="VertexClearanceTheta"   value="0.1035*rad"/>  <!-- Clearance of vertex detector in mrad from IP. !!! Too high currently, lumical acceptance is 107 mrad so consider 110 mrad as limit -> Need to adapt vertex disks!!! -->
     <constant name="VertexAcceptanceLimit"  value="0.125*rad"/>   <!-- Acceptance limit of vertex detector, used to define number of modules per stave  -->
     <constant name="VTXIB_r_min_layer"      value="13.7*mm"/>     <!-- Start of inner vertex detector layers. To keep distance of 1.3 mm from outer beam pipe end (10+0.35+1+0.35 mm = 11.7 mm). This changes to 13.7 mm due to cooling issues (see https://indico.cern.ch/event/1176398/contributions/5207171/attachments/2581129/4451907/Krakow%202023_v23_final.pdf). 
                                                                        Radius can be reduced down to the beam pipe outer radius, changing automatically the number of modules used.  -->
@@ -90,6 +89,7 @@
     <constant name="VTXIB_r_max"            value="50.0*mm"/>     <!-- End of inner vertex = outer radius of inner vertex tube -->
     <constant name="VTXIB_half_length"      value="556.2/2.*mm"/> <!-- 278.1*mm, half length of inner vertex tube -->
     <constant name="VTXIB_tube_thickness"   value="0.2*mm"/>      <!-- Thickness of the inner vertex tube needed for air-cooling -->
+    <constant name="VTXIB_vertical_cable_r_max" value="VTXIB_r_max"/>
 
     <constant name="VTXOB_r_min_layer"    value="130*mm"/>        <!-- R of the innermost layer of the outer vertex -->
     <constant name="VTXOB_r_max_layer"    value="315*mm"/>        <!-- R of the outermost layer of the outer vertex -->
@@ -136,7 +136,7 @@
     <constant name="SiWr_nLayers"       value="1"/>         <!-- Can be either 1 or 2 -->
     <constant name="SiWrD_zmin"         value="3020.0*mm"/> <!-- Can be freely changed, as long as SiWrD_zmax-SiWrD_zmin is >7cm (SiWr_nLayers=2) or >=5cm (SiWr_nLayers=1) -->
     <constant name="SiWrD_zmax"         value="3090.0*mm"/> <!-- Can be freely changed, as long as SiWrD_zmax-SiWrD_zmin is kept constant or is increased -->
-    <constant name="SiWrB_pitch_z0"     value="1.000*mm"/>  <!-- The pitches can be freely changed and can be different for the two layers. These pitches here are just an assumption, impact on physics needs to be studied in detail! -->
+    <constant name="SiWrB_pitch_z0"     value="0.050*mm"/>  <!-- The pitches can be freely changed and can be different for the two layers. These pitches here are just an assumption, impact on physics needs to be studied in detail! -->
     <constant name="SiWrB_pitch_z1"     value="0.050*mm"/>
     <constant name="SiWrB_pitch_phi0"   value="0.050*mm"/>
     <constant name="SiWrB_pitch_phi1"   value="0.050*mm"/>
