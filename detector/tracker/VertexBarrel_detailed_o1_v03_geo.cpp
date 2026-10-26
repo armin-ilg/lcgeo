@@ -658,7 +658,7 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
 
                 if (sensor.sensitives[i]) { // Define as sensitive and add sensitive surface
                   pv.addPhysVolID("sensor", iSensitive);
-                  DetElement sensorDE(moduleDE, _toString(iSensitive, "_sensor%d"), iSensitive);
+                  DetElement sensorDE(moduleDE, det_name + "_" + layer_name + _toString(iModule_VolID, "_module%d") + _toString(iSensitive, "_sensor%d"), iSensitive);
                   sensorDE.setPlacement(pv);
 
                   // Use a VolCylinder surface (not supported in reconstruction)
@@ -699,7 +699,7 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
 
                   if (sensor.sensitives[i]) { // Define as sensitive and add sensitive surface
                     pv.addPhysVolID("sensor", iSensitive);
-                    DetElement sensorDE(moduleDE, _toString(iSensitive, "_sensor%d"), iSensitive);
+                  DetElement sensorDE(moduleDE, det_name + "_" + layer_name + _toString(iModule_VolID, "_module%d") + _toString(iSensitive, "_sensor%d"), iSensitive);
                     sensorDE.setPlacement(pv);
 
                     // Use plane surface on top of trapezoid, supported e.g. in conformal tracking
@@ -722,7 +722,7 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
 
                 if (sensor.sensitives[i]) { // Define as sensitive and add sensitive surface
                   pv.addPhysVolID("sensor", iSensitive);
-                  DetElement sensorDE(moduleDE, _toString(iSensitive, "_sensor%d"), iSensitive);
+                  DetElement sensorDE(moduleDE, det_name + "_" + layer_name + _toString(iModule_VolID, "_module%d") + _toString(iSensitive, "_sensor%d"), iSensitive);
                   sensorDE.setPlacement(pv);
 
                   VolPlane surf(sensor.volumes[i], dd4hep::rec::SurfaceType::Sensitive,

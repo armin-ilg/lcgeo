@@ -351,7 +351,7 @@ static Ref_t create_detector(Detector& theDetector, xml_h e, SensitiveDetector s
       double phi0_layer = x_layer.phi0(0);
       double reflect_rot = x_layer.attr<double>(_Unicode(reflect_rot), 0.0);
 
-      string disk_name = _toString(layer_id, "layer%d");
+      string disk_name = side_name + _toString(layer_id, "_layer%d");
 
       // Either use assembly or volume, depending on whether motherVolThickness is given
       PlacedVolume whole_disk_volume_placed;
@@ -429,7 +429,7 @@ static Ref_t create_detector(Detector& theDetector, xml_h e, SensitiveDetector s
             }
             Position stave_pos = Position(x_pos, y_pos, z_pos);
 
-            string stave_name = petal_name + _toString(iStave, "_stave%d");
+            string stave_name = _toString(iStave, "stave%d");
 
             PlacedVolume whole_stave_volume_placed;
             Volume whole_stave_volume_v;
@@ -514,7 +514,7 @@ static Ref_t create_detector(Detector& theDetector, xml_h e, SensitiveDetector s
                   int(iModule_tot / m.nGroupingModules); // To more efficiently use GlobalTrackerReadoutID bits, use the
                                                          // same module id for every nGroupingModules modules and
                                                          // distinguish them by the sensor id instead
-              string module_name = stave_name + "_" + m.sensor_name + _toString(iModule_tot, "_module%d");
+              string module_name = _toString(iModule_tot, "module%d");
               Assembly module_assembly(module_name);
 
               if (stave_motherVolThickness > 0.0 && stave_motherVolWidth > 0.0)
@@ -548,7 +548,7 @@ static Ref_t create_detector(Detector& theDetector, xml_h e, SensitiveDetector s
 
                 // Place active sensor parts
                 if (m.sensor_sensitives[i]) {
-                  string sensor_name = module_name + _toString(iSensitive, "_sensor%d");
+                  string sensor_name = det_name + "_" + side_name + "_" + disk_name + "_" + petal_name + "_" + stave_name + "_" + module_name + _toString(iSensitive, "_sensor%d");
                   pv = module_assembly.placeVolume(m.sensor_volumes[i], pos + pos_i);
 
                   pv.addPhysVolID("sensor", iSensitive);
