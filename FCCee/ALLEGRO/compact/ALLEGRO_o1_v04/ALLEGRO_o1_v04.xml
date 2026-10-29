@@ -3,7 +3,7 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
 
-  <info name="ALLEGRO_o1_v04 Master"
+  <info name="ALLEGRO_o1_v04"
     title="ALLEGRO_o1_v04 Master"
     author="Giovanni Marchiori"
     url="no"
