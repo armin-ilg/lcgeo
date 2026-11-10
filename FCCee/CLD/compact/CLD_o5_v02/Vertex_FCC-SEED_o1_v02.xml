@@ -62,5 +62,5 @@
     <include ref="../../../IDEA/compact/IDEA_o1_v04/VertexInnerBarrel_support_tube_o1_v01.xml"/>
 
     <comment> Vertex endcap, based on CLD disks </comment>
-    <include ref="../../../CLD/compact/CLD_o5_v01/Vertex_FCC-SEED_endcap_o1_v01.xml"/>
+    <include ref="../../../CLD/compact/CLD_o5_v01/Vertex_FCC-SEED_endcap_o1_v02.xml"/>
 </lccdd>
