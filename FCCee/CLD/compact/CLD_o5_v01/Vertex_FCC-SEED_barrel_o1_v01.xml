@@ -10,8 +10,8 @@
         <constant name="VTXIB_SEED_sensor_z_periphery" value="0.100*mm"/>
         <constant name="VTXIB_SEED_sensor_z" value="VTXIB_SEED_sensor_z_sensitive+VTXIB_SEED_sensor_z_periphery"/>
 
-        <constant name="VTXIB_SEED_insensitive_thickness_below"   value="40e-03*mm"/> <comment> Assume 40 µm of insensitive sensor thickness </comment>
-        <constant name="VTXIB_SEED_sensitive_thickness"           value="10e-03*mm"/> <comment> Assume 10 µm of sensitive sensor thickness, reflecting epi-layer thickness in TPSCo 65 nm process </comment>
+        <constant name="VTXIB_SEED_insensitive_thickness_below"   value="20e-03*mm"/> <comment> Assume 20 µm of insensitive sensor thickness </comment>
+        <constant name="VTXIB_SEED_sensitive_thickness"           value="30e-03*mm"/> <comment> Assume 30 µm of sensitive sensor thickness. This is more than in the TPSCo 65 nm process (about 12 µm), but allows to use the CCMap digitiser with the CCMap shifted in sensor depth to have the reco hit in the middle of the sensitive element. </comment>
         <constant name="VTXIB_SEED_insensitive_thickness_above"   value="0e-03*mm"/> <comment> Assume no metal layer for powering </comment>
         <constant name="VTXIB_SEED_total_sensor_thickness"        value="VTXIB_SEED_insensitive_thickness_below+VTXIB_SEED_sensitive_thickness+VTXIB_SEED_insensitive_thickness_above"/>
 
@@ -181,7 +181,7 @@
 
             <stave name="VTXIB_SEED_Stave1" r="VTXIB_SEED_curvature1" length="2.*VTXIB_SEED_half_length1-2.*Support_ring_length">
                 <sensor name="sensor" thickness="VTXIB_SEED_total_sensor_thickness" material="Silicon">
-                    <component sensitive="True"  isCurved="true" name="Pixel array"   vis="VTXSensitiveVis" xmin="0." xmax="VTXIB_SEED_sensor_phi_sensitive" ymin="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2." sensor_insensitive_thickness_below="VTXIB_SEED_insensitive_thickness_below" thickness="VTXIB_SEED_sensitive_thickness" sensor_insensitive_thickness_above="VTXIB_SEED_insensitive_thickness_above" other_insensitive_thickness_below="VTXIB_SEED_Kapton_beampipe_thickness" other_insensitive_thickness_above="0." nsegments="VTXIB_curved_nsegments"/>
+                    <component sensitive="True"  isCurved="true" name="Pixel array"   vis="VTXSensitiveVis" xmin="0." xmax="VTXIB_SEED_sensor_phi_sensitive" ymin="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2." sensor_insensitive_thickness_below="VTXIB_SEED_insensitive_thickness_below" thickness="VTXIB_SEED_sensitive_thickness" sensor_insensitive_thickness_above="VTXIB_SEED_insensitive_thickness_above" other_insensitive_thickness_below="0." other_insensitive_thickness_above="0." nsegments="VTXIB_curved_nsegments"/>
                     <component sensitive="False" isCurved="true" name="Periphery_phi" vis="VTXPeripheryVis" xmin="VTXIB_SEED_sensor_phi_sensitive" xmax="VTXIB_SEED_sensor_phi" ymin="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2."/>
                     <component sensitive="False" isCurved="true" name="Periphery_z1"  vis="VTXPeripheryVis" xmin="0." xmax="VTXIB_SEED_sensor_phi" ymin="-VTXIB_SEED_sensor_z/2." ymax="-VTXIB_SEED_sensor_z/2.+VTXIB_SEED_sensor_z_periphery/2."/>
                     <component sensitive="False" isCurved="true" name="Periphery_z2"  vis="VTXPeripheryVis" xmin="0." xmax="VTXIB_SEED_sensor_phi" ymin="+VTXIB_SEED_sensor_z/2.-VTXIB_SEED_sensor_z_periphery/2." ymax="+VTXIB_SEED_sensor_z/2."/>
