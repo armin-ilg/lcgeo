@@ -428,10 +428,16 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
 
   printout(INFO, det_name, "Building of detector ...");
   int nLayers = 0;
-  vector<int> layer_ids;
-  DetElement layerDE;
+  
   std::map<int, int> iModuleTot_map; // Map to keep track of the total number of modules for each layer id, to give
                                      // unique IDs to modules even when there are multiple layers with the same layer ID
+
+  // Initialise maps that are needed to have a nested structure of layer detector elements and assemblies leading to this detector element structure: layer_i/layer_i_0 and layer_i_layer_i_1. This is useful for ACTS tracking.
+  std::map<int, Assembly> layerGroupAssemblies;  // layer_id -> Assembly volume
+  std::map<int, DetElement> layerGroupDEs;       // layer_id -> common DetElement
+  std::map<int, bool> layerGroupPlaced;          // layer_id -> whether Assembly is placed in envelope
+  std::map<int, int> layerCount;                 // layer_id -> count of layers with this ID
+                                     
   for (xml_coll_t c(e, _U(layer)); c; ++c) {
 
     xml_comp_t x_layer(c);
@@ -461,33 +467,47 @@ static Ref_t create_element(Detector& theDetector, xml_h e, SensitiveDetector se
     double motherVolOffset =
         getAttrOrDefault(x_layer, _Unicode(motherVolOffset), double(0.0)); // In case wafer/stave is asymmetric
 
-    std::string layer_name = _toString(layer_id, "layer%d");
+    int layer_index = layerCount[layer_id]++;  // Increment per layer_id
 
+    // --- Create or get the GROUP Assembly for this layer_id ---
+    if (layerGroupAssemblies.find(layer_id) == layerGroupAssemblies.end()) {
+        std::string group_name = _toString(layer_id, "layer_%d");
+        Assembly groupAssembly(group_name);
+        layerGroupAssemblies[layer_id] = groupAssembly;
+        layerGroupPlaced[layer_id] = false;
+    }
+
+    // --- Place the GROUP Assembly in the envelope (once per layer_id) ---
+    if (!layerGroupPlaced[layer_id]) {
+        PlacedVolume groupPV = envelope.placeVolume(layerGroupAssemblies[layer_id], Position(0., 0., 0.));
+        groupPV.addPhysVolID("layer", layer_id).addPhysVolID("side", 0);
+
+        DetElement groupDE(sdet, _toString(layer_id, "layer_%d"), layer_id);
+        groupDE.setPlacement(groupPV);  // Now has a valid placement!
+        layerGroupDEs[layer_id] = groupDE;
+        layerGroupPlaced[layer_id] = true;
+    }
+
+    // --- Place the PHYSICAL LAYER inside the GROUP Assembly ---
+    std::string layer_name = _toString(layer_id, "layer_%d") + "_" + _toString(layer_index);
     Volume whole_layer_volume_v;
     Assembly whole_layer_volume_a;
+
     if (motherVolThickness > 0.0) {
-      double motherVolRmin = getAttrOrDefault(x_layer, _Unicode(motherVolRmin), double(x_layer.r()));
-      Tube whole_layer_tube = Tube(motherVolRmin, motherVolRmin + motherVolThickness, motherVolLength / 2.);
-      whole_layer_volume_v = Volume(layer_name, whole_layer_tube, theDetector.material("Air"));
-      whole_layer_volume_v.setVisAttributes(theDetector, x_det.visStr());
-      pv = envelope.placeVolume(whole_layer_volume_v, Position(0., 0., z_offset));
+        double motherVolRmin = getAttrOrDefault(x_layer, _Unicode(motherVolRmin), double(x_layer.r()));
+        Tube whole_layer_tube = Tube(motherVolRmin, motherVolRmin + motherVolThickness, motherVolLength / 2.);
+        whole_layer_volume_v = Volume(layer_name, whole_layer_tube, theDetector.material("Air"));
+        whole_layer_volume_v.setVisAttributes(theDetector, x_det.visStr());
+        pv = layerGroupAssemblies[layer_id].placeVolume(whole_layer_volume_v, Position(0., 0., z_offset));
     } else {
-      //// Use just assembly to avoid overlap between layers
-      whole_layer_volume_a = Assembly(layer_name);
-      pv = envelope.placeVolume(whole_layer_volume_a, Position(0., 0., z_offset));
+        whole_layer_volume_a = Assembly(layer_name);
+        pv = layerGroupAssemblies[layer_id].placeVolume(whole_layer_volume_a, Position(0., 0., z_offset));
     }
-    if (find(layer_ids.begin(), layer_ids.end(), layer_id) != layer_ids.end()) {
-      printout(
-          INFO, det_name,
-          "Defining multiple layers with the same layer ID: layer_id: " + _toString(layer_id) +
-              ", this is okay. Just make sure you have enough bits in GlobalTrackerReadoutID for layers and modules.");
-    }
+
     pv.addPhysVolID("layer", layer_id).addPhysVolID("side", 0);
-    layer_ids.push_back(layer_id);
-    layerDE = DetElement(sdet,
-                         _toString(layer_id, "layer_%d") +
-                             _toString(int(count(layer_ids.begin(), layer_ids.end(), layer_id)), "_%d"),
-                         layer_id);
+
+    // --- Create the PHYSICAL LAYER DetElement as a child of the GROUP ---
+    DetElement layerDE = DetElement(layerGroupDEs[layer_id], layer_name, layer_id);
     layerDE.setPlacement(pv);
 
     int nLadders = x_layer.attr<int>(_Unicode(nLadders));
